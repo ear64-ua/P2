@@ -1,5 +1,5 @@
-// Enrique Abma Romero
-// X9853366M
+// Code by:	 Enrique Abma Romero
+// NIE :	 X9853366M
 
 
 #include <iostream>
