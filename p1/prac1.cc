@@ -8,6 +8,7 @@
 
 using namespace std;
 
+
 struct Date{
   int day;
   int month;
@@ -76,7 +77,23 @@ void showMainMenu(){
        << "Option: ";
 }
 
+
 void editProject(Project &toDoList){
+
+	Error e;
+
+	do{
+		cout << "Enter proyect name: ";
+		getline(cin,toDoList.name);
+
+		if (toDoList.name.length() == 0){
+			e = ERR_EMPTY;
+			error(e);
+		}
+	}while(toDoList.name.length() == 0);
+	cout << "Enter proyect description: ";
+	getline(cin,toDoList.description);
+
 }
 
 void addList(Project &toDoList){
