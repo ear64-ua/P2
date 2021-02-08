@@ -97,9 +97,28 @@ void editProject(Project &toDoList){
 }
 
 void addList(Project &toDoList){
+
+  List nameList;
+  Error e;
+
+  do{
+    cout << "Enter list name: " << endl;
+    getline(cin,nameList.name);
+
+    if (nameList.name.length() == 0){
+      e = ERR_EMPTY;
+      error(e);
+    }
+    
+    else{
+      toDoList.lists.push_back(nameList);
+    }
+
+  }while(nameList.name.length() == 0);
 }
 
 void deleteList(Project &toDoList){
+
 }
 
 void addTask(Project &toDoList){
