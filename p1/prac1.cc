@@ -100,6 +100,7 @@ void addList(Project &toDoList){
 
   List nameList;
   Error e;
+  bool repeated;
 
   do{
     cout << "Enter list name: " << endl;
@@ -111,14 +112,30 @@ void addList(Project &toDoList){
     }
     
     else{
-      toDoList.lists.push_back(nameList);
+
+      for (int i = 0; i < toDoList.lists.size(); i++)
+      {
+        if ( toDoList.lists[i].name == nameList.name)
+          repeated = false;
+        else 
+          repeated = true;
+        
+      }
+
+      if (repeated){
+        e = ERR_LIST_NAME;
+        error(e);
+        }
+
+      else{
+        toDoList.lists.push_back(nameList);
+        }
     }
 
-  }while(nameList.name.length() == 0);
+  } while(nameList.name.length() == 0);
 }
 
 void deleteList(Project &toDoList){
-
 }
 
 void addTask(Project &toDoList){
