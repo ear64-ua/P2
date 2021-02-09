@@ -103,7 +103,7 @@ void addList(Project &toDoList){
   bool repeated = false;
 
   do{
-    cout << "Enter list name: " << endl;
+    cout << "Enter list name: ";
     getline(cin,nameList.name);
 
     if (nameList.name.length() == 0){
@@ -142,7 +142,7 @@ void deleteList(Project &toDoList){
     bool encontrado = true;
 
     do{
-    cout << "Enter list name: " << endl;
+    cout << "Enter list name: ";
     getline(cin,nameList.name);
 
     if (nameList.name.length() == 0){
@@ -174,18 +174,69 @@ void deleteList(Project &toDoList){
 }
 
 void addTask(Project &toDoList){
-}
 
+	Task vecTask;
+	List nameList;
+  	Error e;
+  	bool found = false;
+  	int i, j;
+
+	do{
+	    cout << "Enter list name: ";
+	    getline(cin,nameList.name);
+
+	    if (nameList.name.length() == 0){
+	      e = ERR_EMPTY;
+	      error(e);
+	    }
+	    
+	    else{
+
+	      for (i = 0; i < toDoList.lists.size(); i++)
+	      {
+
+	        if (toDoList.lists[i].name == nameList.name){
+	          	j = i;
+	          	found = true;
+	        }
+
+	      }
+
+	      if (!found){
+	        e = ERR_LIST_NAME;
+	        error(e);
+	        }
+
+	      else{
+
+	      	cout << "Enter task name: " ;
+	      	getline(cin,vecTask.name);
+
+	      	toDoList.lists[j].tasks.push_back(vecTask);
+
+	      	cout << endl;
+	      }
+		}
+	}while(nameList.name.length() == 0); 
+}
 void deleteTask(Project &toDoList){
 }
 
 void toggleTask(Project &toDoList){
 
-	int i;
-	for (i = 0 ; i < toDoList.lists.size(); i++){
+	for (int i = 0 ; i < toDoList.lists.size(); i++){
 
-		cout << toDoList.lists[i].name << endl;
+		cout << toDoList.lists[i].name << " " ;
+
+		for (int j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
+			cout << toDoList.lists[i].tasks[j].name << " " ;
+			cout << endl;
+
+		}
+
 	}
+
+	cout << endl;
 }
 void report(const Project &toDoList){
 }
