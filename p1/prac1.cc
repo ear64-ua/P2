@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include <sstream> 
 
 using namespace std;
 
@@ -42,6 +43,8 @@ enum Error{
   ERR_DATE,
   ERR_TIME
 };
+
+bool checkDate(int , int , int);
 
 void error(Error e){
   switch(e){
@@ -178,11 +181,14 @@ void addTask(Project &toDoList){
 	Task vecTask;
 	List nameList;
   	Error e;
+  	string date, aux;
   	bool found = false;
-  	int i, j;
+  	int i, j , day, month, year;
+  	int k = 0;
 
 	do{
 	    cout << "Enter list name: ";
+	    
 	    getline(cin,nameList.name);
 
 	    if (nameList.name.length() == 0){
@@ -192,30 +198,59 @@ void addTask(Project &toDoList){
 	    
 	    else{
 
-	      for (i = 0; i < toDoList.lists.size(); i++)
-	      {
+	      	for (i = 0; i < toDoList.lists.size(); i++)
+	      	{
 
-	        if (toDoList.lists[i].name == nameList.name){
-	          	j = i;
-	          	found = true;
-	        }
+		        if (toDoList.lists[i].name == nameList.name){
+		          	j = i;
+		          	found = true;
+		        }
+		     }
 
-	      }
+		    if (!found){
+		      e = ERR_LIST_NAME;
+		      error(e);
+		    }
 
-	      if (!found){
-	        e = ERR_LIST_NAME;
-	        error(e);
-	        }
+		    else{
 
-	      else{
+		      	cout << "Enter task name: " ;
+		      	getline(cin,vecTask.name);
 
-	      	cout << "Enter task name: " ;
-	      	getline(cin,vecTask.name);
+		      	cout << "Enter deadline: ";
+		   
+				getline(cin,date);
 
-	      	toDoList.lists[j].tasks.push_back(vecTask);
+				stringstream ss(date); 
+			  
+			    while (getline(ss, aux, '/')) { 
+			        k++;
 
-	      	cout << endl;
-	      }
+			       if (k==1){
+			       	day = stoi(aux);
+			        }
+
+			       if (k==2){
+			       	month = stoi(aux);
+			        }
+
+			       if (k==3){
+					year = stoi(aux);
+			        }
+			    }
+
+		      	if (checkDate(day, month, year)){
+		      		vecTask.deadline.day = day;
+		      		vecTask.deadline.month = month;
+		      		vecTask.deadline.year = year; 
+		      		toDoList.lists[j].tasks.push_back(vecTask);
+		        }
+
+		        else if (!checkDate(day, month, year)){
+		        	e = ERR_DATE;
+		        	error(e);
+		        }
+			}
 		}
 	}while(nameList.name.length() == 0); 
 }
@@ -223,22 +258,70 @@ void deleteTask(Project &toDoList){
 }
 
 void toggleTask(Project &toDoList){
+}
+void report(const Project &toDoList){
+
+	cout << "Name: "<< toDoList.name << endl;
+	cout << "Description: "<< toDoList.description << endl;
 
 	for (int i = 0 ; i < toDoList.lists.size(); i++){
 
-		cout << toDoList.lists[i].name << " " ;
+		cout << toDoList.lists[i].name << " " << endl;
 
 		for (int j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
-			cout << toDoList.lists[i].tasks[j].name << " " ;
-			cout << endl;
+
+			cout << "[";
+
+			if (toDoList.lists[i].tasks[j].isDone)
+				cout << "X";
+			else 
+				cout << " ";
+
+			cout << "]";
+
+			cout << toDoList.lists[i].tasks[j].deadline.day << "-";
+			cout << toDoList.lists[i].tasks[j].deadline.month << "-";
+			cout << toDoList.lists[i].tasks[j].deadline.year;
+
+			cout << " : " << toDoList.lists[i].tasks[j].name << endl;
 
 		}
 
 	}
 
+	cout << "Total left: ";
+	cout << "Total done: ";
+
 	cout << endl;
 }
-void report(const Project &toDoList){
+
+bool checkDate(int day, int month, int year){
+
+	bool bisiesto = false;
+	bool valido = false;
+
+	if((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
+		bisiesto = true;
+
+	if (year > 1999 && year < 2101){
+		if (month > 0 && month < 13){
+			if (bisiesto && month == 2 && day > 0 && day <= 29)
+				valido = true;
+
+			else if (!bisiesto && month == 2 && day > 0 && day <= 28)
+				valido = true;
+		
+			else if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12 ) && day > 0 && day <= 31)
+				valido = true;
+	
+			else if ((month == 4 || month == 6 || month == 9 || month == 11 ) && day > 0 && day <= 30)
+				valido = true;
+		}
+	}
+	else
+		valido = false;
+
+	return valido;
 }
 
 int main(){
@@ -250,6 +333,7 @@ int main(){
     showMainMenu();
     cin >> option;
     cin.get();
+    cout << endl;
     
     switch(option){
       case '1': editProject(toDoList);
