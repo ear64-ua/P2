@@ -243,6 +243,11 @@ void addTask(Project &toDoList){
 		      		vecTask.deadline.day = day;
 		      		vecTask.deadline.month = month;
 		      		vecTask.deadline.year = year; 
+
+		      		cout << "Enter expected time: ";
+		      		cin >> vecTask.time;
+		      		vecTask.isDone = false;
+
 		      		toDoList.lists[j].tasks.push_back(vecTask);
 		        }
 
@@ -261,6 +266,8 @@ void toggleTask(Project &toDoList){
 }
 void report(const Project &toDoList){
 
+	int timeLeft = 0, timeDone = 0;
+
 	cout << "Name: "<< toDoList.name << endl;
 	cout << "Description: "<< toDoList.description << endl;
 
@@ -272,12 +279,19 @@ void report(const Project &toDoList){
 
 			cout << "[";
 
-			if (toDoList.lists[i].tasks[j].isDone)
+			if (toDoList.lists[i].tasks[j].isDone){
 				cout << "X";
-			else 
+				timeDone = timeDone + toDoList.lists[i].tasks[j].time;
+			}
+			else{
 				cout << " ";
+				timeLeft = timeLeft + toDoList.lists[i].tasks[j].time;
+			}
+			cout << "] ";
 
-			cout << "]";
+			cout << "(" << toDoList.lists[i].tasks[j].time << ") ";
+
+
 
 			cout << toDoList.lists[i].tasks[j].deadline.day << "-";
 			cout << toDoList.lists[i].tasks[j].deadline.month << "-";
@@ -289,9 +303,8 @@ void report(const Project &toDoList){
 
 	}
 
-	cout << "Total left: ";
-	cout << "Total done: ";
-
+	cout << "Total left: " << timeLeft << endl;
+	cout << "Total done: " << timeDone << endl;
 	cout << endl;
 }
 
