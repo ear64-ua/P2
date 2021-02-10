@@ -266,7 +266,10 @@ void toggleTask(Project &toDoList){
 }
 void report(const Project &toDoList){
 
-	int timeLeft = 0, timeDone = 0;
+	int timeLeft = 0, timeDone = 0, countLeft= 0, countDone = 0;
+	int PriorDay = 32, PriorMonth = 13, PriorYear = 2101;
+	string highestName;
+	int currentDay, currentMonth, currentYear; 
 
 	cout << "Name: "<< toDoList.name << endl;
 	cout << "Description: "<< toDoList.description << endl;
@@ -276,35 +279,66 @@ void report(const Project &toDoList){
 		cout << toDoList.lists[i].name << " " << endl;
 
 		for (int j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
-
-			cout << "[";
-
-			if (toDoList.lists[i].tasks[j].isDone){
-				cout << "X";
-				timeDone = timeDone + toDoList.lists[i].tasks[j].time;
-			}
-			else{
-				cout << " ";
+			if (!toDoList.lists[i].tasks[j].isDone){
+				
+				cout << "[ ] ";
 				timeLeft = timeLeft + toDoList.lists[i].tasks[j].time;
+				countLeft++;
+				
+
+				cout << "(" << toDoList.lists[i].tasks[j].time << ") ";
+
+				cout << toDoList.lists[i].tasks[j].deadline.year << "-";
+				cout << toDoList.lists[i].tasks[j].deadline.month << "-";
+				cout << toDoList.lists[i].tasks[j].deadline.day;
+
+				currentYear = toDoList.lists[i].tasks[j].deadline.year;
+				currentMonth = toDoList.lists[i].tasks[j].deadline.month;
+				currentDay = toDoList.lists[i].tasks[j].deadline.day;
+
+				if (PriorYear >= currentYear ){
+				
+					if (PriorMonth >= currentMonth){
+
+						if (PriorDay > currentDay){
+
+							PriorDay = currentDay;
+							PriorMonth = currentMonth;
+							PriorYear = currentYear;
+							highestName = toDoList.lists[i].tasks[j].name;
+						}
+					}
+
+				}
+				
+				
+				cout << " : " << toDoList.lists[i].tasks[j].name << endl;
+
 			}
-			cout << "] ";
 
-			cout << "(" << toDoList.lists[i].tasks[j].time << ") ";
-
+			else{
 
 
-			cout << toDoList.lists[i].tasks[j].deadline.day << "-";
-			cout << toDoList.lists[i].tasks[j].deadline.month << "-";
-			cout << toDoList.lists[i].tasks[j].deadline.year;
+				cout << "[X] ";
+				cout << "(" << toDoList.lists[i].tasks[j].time << ") ";
+				timeDone = timeDone + toDoList.lists[i].tasks[j].time;
+				countDone++;
 
-			cout << " : " << toDoList.lists[i].tasks[j].name << endl;
+				cout << toDoList.lists[i].tasks[j].deadline.year << "-";
+				cout << toDoList.lists[i].tasks[j].deadline.month << "-";
+				cout << toDoList.lists[i].tasks[j].deadline.day;
 
+				cout << " : " << toDoList.lists[i].tasks[j].name << endl;
+			}
 		}
 
 	}
 
-	cout << "Total left: " << timeLeft << endl;
-	cout << "Total done: " << timeDone << endl;
+	cout << "Total left: " << countLeft << " (" << timeLeft << " minutes)" << endl;
+	cout << "Total done: "<< countDone << " (" << timeDone << " minutes)" << endl;
+	cout << "Highest priority: " << highestName << " (";
+	cout << PriorYear << "-" << PriorMonth << "-" << PriorDay << ")" << endl;
+
 	cout << endl;
 }
 
