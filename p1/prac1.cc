@@ -260,6 +260,69 @@ void addTask(Project &toDoList){
 	}while(nameList.name.length() == 0); 
 }
 void deleteTask(Project &toDoList){
+
+	int i, j, k;
+	Task vecTask;
+	List nameList;
+  	Error e;
+  	bool encontrado;
+
+  	do{
+    	cout << "Enter list name: ";
+    	getline(cin,nameList.name);
+
+   		if (nameList.name.length() == 0){
+    	 e = ERR_EMPTY;
+     	 error(e);
+   		 }
+    
+	    else {
+	      
+	      	for (i = 0 ; i < toDoList.lists.size(); i++){
+
+		        if ( toDoList.lists[i].name == nameList.name){
+		          
+		          	encontrado = true;
+
+		          	do{
+			        	cout << "Enter task name: ";
+			        	getline(cin,vecTask.name);
+
+			        	if (vecTask.name.length() == 0){
+		    			 	e = ERR_EMPTY;
+		     			 	error(e);
+		   		 		}
+			          	
+			          	else{
+
+			          		for (j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
+
+			          			if ( toDoList.lists[i].tasks[j].name == vecTask.name){
+		         					 k = j--;
+		         					 toDoList.lists[i].tasks.erase(toDoList.lists[i].tasks.begin()+k);
+		         					 encontrado = true;
+		         				}
+
+		         				else 
+		         					encontrado = false;
+
+			          		}
+
+			          	}
+			        }while(vecTask.name.length() == 0);
+			    }
+		        else
+		        	encontrado = false;
+	     	 
+	  	  	}
+
+	      	if (!encontrado){
+	      	 	 e = ERR_LIST_NAME;
+	      	 	error(e);
+	      	}
+		}
+
+	}while(nameList.name.length() == 0); 
 }
 
 void toggleTask(Project &toDoList){
