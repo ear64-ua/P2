@@ -1,14 +1,12 @@
 // Code by:	 Enrique Abma Romero
 // NIE :	 X9853366M
 
-
 #include <iostream>
 #include <vector>
 #include <cstdlib>
 #include <sstream> 
 
 using namespace std;
-
 
 struct Date{
   int day;
@@ -265,7 +263,8 @@ void deleteTask(Project &toDoList){
 	Task vecTask;
 	List nameList;
   	Error e;
-  	bool encontrado;
+  	bool ListEncontrado = false;
+  	bool TaskEncontrado = false;
 
   	do{
     	cout << "Enter list name: ";
@@ -282,7 +281,7 @@ void deleteTask(Project &toDoList){
 
 		        if ( toDoList.lists[i].name == nameList.name){
 		          
-		          	encontrado = true;
+		          	ListEncontrado = true;
 
 		          	do{
 			        	cout << "Enter task name: ";
@@ -298,27 +297,28 @@ void deleteTask(Project &toDoList){
 			          		for (j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
 
 			          			if ( toDoList.lists[i].tasks[j].name == vecTask.name){
-		         					 k = j--;
-		         					 toDoList.lists[i].tasks.erase(toDoList.lists[i].tasks.begin()+k);
-		         					 encontrado = true;
-		         				}
 
-		         				else 
-		         					encontrado = false;
+			          				TaskEncontrado = true;
+		         					k = j--;
+		         					toDoList.lists[i].tasks.erase(toDoList.lists[i].tasks.begin()+k);
+		         				}
 
 			          		}
 
 			          	}
 			        }while(vecTask.name.length() == 0);
+
+			        if (!TaskEncontrado){
+			        	e = ERR_TASK_NAME;
+			        	error(e);
+			        }
 			    }
-		        else
-		        	encontrado = false;
 	     	 
 	  	  	}
 
-	      	if (!encontrado){
-	      	 	 e = ERR_LIST_NAME;
-	      	 	error(e);
+	      	if (!ListEncontrado){
+	      	 	e = ERR_LIST_NAME;
+	      		error(e);
 	      	}
 		}
 
@@ -326,11 +326,84 @@ void deleteTask(Project &toDoList){
 }
 
 void toggleTask(Project &toDoList){
+
+	int i, j;
+	Task vecTask;
+	List nameList;
+  	Error e;
+  	bool ListEncontrado = false;
+  	bool TaskEncontrado = false;
+
+  	do{
+    	cout << "Enter list name: ";
+    	getline(cin,nameList.name);
+
+   		if (nameList.name.length() == 0){
+    	 e = ERR_EMPTY;
+     	 error(e);
+   		 }
+    
+	    else {
+	      
+	      	for (i = 0 ; i < toDoList.lists.size(); i++){
+
+		        if ( toDoList.lists[i].name == nameList.name){
+		          
+		          	ListEncontrado = true;
+
+		          	do{
+			        	cout << "Enter task name: ";
+			        	getline(cin,vecTask.name);
+
+			        	if (vecTask.name.length() == 0){
+		    			 	e = ERR_EMPTY;
+		     			 	error(e);
+		   		 		}
+			          	
+			          	else{
+
+			          		for (j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
+
+			          			if ( toDoList.lists[i].tasks[j].name == vecTask.name){
+
+			          				TaskEncontrado = true;
+		         					
+		         					if (toDoList.lists[i].tasks[j].isDone){
+		         						toDoList.lists[i].tasks[j].isDone = false;
+		         					}
+		         					
+		         					else{
+
+
+		         						toDoList.lists[i].tasks[j].isDone = true;
+		         					}
+		         				}
+			          		}
+			          	}
+			        }while(vecTask.name.length() == 0);
+
+			        if (!TaskEncontrado){
+					
+			        	e = ERR_TASK_NAME;
+			        	error(e);
+					}
+			    }
+	  	  	}
+
+	      	if (!ListEncontrado){
+	      	 	e = ERR_LIST_NAME;
+	      		error(e);
+	      	}
+		}
+
+	}while(nameList.name.length() == 0); 
+
+
 }
 void report(const Project &toDoList){
 
 	int timeLeft = 0, timeDone = 0, countLeft= 0, countDone = 0;
-	int PriorDay = 32, PriorMonth = 13, PriorYear = 2101;
+	int PriorDay = 32, PriorMonth = 12, PriorYear = 2100;
 	string highestName;
 	int currentDay, currentMonth, currentYear; 
 
@@ -347,7 +420,7 @@ void report(const Project &toDoList){
 				cout << "[ ] ";
 				timeLeft = timeLeft + toDoList.lists[i].tasks[j].time;
 				countLeft++;
-				
+
 
 				cout << "(" << toDoList.lists[i].tasks[j].time << ") ";
 
@@ -359,18 +432,27 @@ void report(const Project &toDoList){
 				currentMonth = toDoList.lists[i].tasks[j].deadline.month;
 				currentDay = toDoList.lists[i].tasks[j].deadline.day;
 
-				if (PriorYear >= currentYear ){
-				
-					if (PriorMonth >= currentMonth){
+
+				if (PriorYear >= currentYear){
+					
+					if (PriorMonth > currentMonth){
+
+						PriorDay = currentDay;
+						PriorMonth = currentMonth;
+						PriorYear = currentYear;
+						highestName = toDoList.lists[i].tasks[j].name;
+					}	
+					else if (PriorMonth == currentMonth){
 
 						if (PriorDay > currentDay){
-
 							PriorDay = currentDay;
 							PriorMonth = currentMonth;
 							PriorYear = currentYear;
 							highestName = toDoList.lists[i].tasks[j].name;
 						}
+
 					}
+					
 
 				}
 				
