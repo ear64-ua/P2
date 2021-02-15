@@ -43,6 +43,7 @@ enum Error{
 };
 
 bool checkDate(int , int , int);
+bool checkListName(List &);
 
 void error(Error e){
   switch(e){
@@ -78,338 +79,207 @@ void showMainMenu(){
        << "Option: ";
 }
 
-
 void editProject(Project &toDoList){
-
-	Error e;
 
 	do{
 		cout << "Enter proyect name: ";
 		getline(cin,toDoList.name);
 
 		if (toDoList.name.length() == 0){
-			e = ERR_EMPTY;
-			error(e);
+			error(ERR_EMPTY);
 		}
 	}while(toDoList.name.length() == 0);
 	cout << "Enter proyect description: ";
 	getline(cin,toDoList.description);
-
 }
 
 void addList(Project &toDoList){
 
   List nameList;
-  Error e;
   bool repeated = false;
 
-  do{
-    cout << "Enter list name: ";
-    getline(cin,nameList.name);
+   checkListName(nameList); 
 
-    if (nameList.name.length() == 0){
-      e = ERR_EMPTY;
-      error(e);
+   for (int i = 0; i < toDoList.lists.size(); i++){
+
+        if (toDoList.lists[i].name == nameList.name)
+        repeated = true;
     }
-    
-    else{
 
-      for (int i = 0; i < toDoList.lists.size(); i++)
-      {
+    if (repeated)
+        error(ERR_LIST_NAME);
 
-        if (toDoList.lists[i].name == nameList.name){
-          repeated = true;
-        }
-      }
-
-      if (repeated){
-        e = ERR_LIST_NAME;
-        error(e);
-        }
-
-      else{
+    else
         toDoList.lists.push_back(nameList);
-        }
-    }
-
-  } while(nameList.name.length() == 0);
 }
 
 void deleteList(Project &toDoList){
 
     List nameList;
-    Error e;
     int i, j;
-    bool encontrado = true;
+    bool found = true;
 
-    do{
-    cout << "Enter list name: ";
-    getline(cin,nameList.name);
-
-    if (nameList.name.length() == 0){
-      e = ERR_EMPTY;
-      error(e);
-    }
-    
-    else {
+	checkListName(nameList);
       
-      for (i = 0 ; i < toDoList.lists.size(); i++){
+    for (i = 0 ; i < toDoList.lists.size(); i++){
 
-        if ( toDoList.lists[i].name == nameList.name){
-          j = i--;
-          toDoList.lists.erase(toDoList.lists.begin()+j);
-          encontrado = true;
+      	if ( toDoList.lists[i].name == nameList.name){
+        	j = i--;
+          	toDoList.lists.erase(toDoList.lists.begin()+j);
+          	found = true;
         }
-
-        else
-        	encontrado = false;
-      }
-
-      if (!encontrado){
-        e = ERR_LIST_NAME;
-        error(e);
-      }
     }
 
-  }while(nameList.name.length() == 0); 
+    if (!found)
+    	error(ERR_LIST_NAME);
 }
 
 void addTask(Project &toDoList){
 
 	Task vecTask;
 	List nameList;
-  	Error e;
   	string date, aux;
-  	bool found = false;
-  	int i, j , day, month, year;
-  	int k = 0;
+  	bool ListFound = false;
+  	int i, day, month, year, k = 0;
 
-	do{
-	    cout << "Enter list name: ";
-	    
-	    getline(cin,nameList.name);
+	if (checkListName(nameList)) {
 
-	    if (nameList.name.length() == 0){
-	      e = ERR_EMPTY;
-	      error(e);
-	    }
-	    
-	    else{
-
-	      	for (i = 0; i < toDoList.lists.size(); i++)
+		for (i = 0; i < toDoList.lists.size(); i++)
 	      	{
-
 		        if (toDoList.lists[i].name == nameList.name){
-		          	j = i;
-		          	found = true;
-		        }
-		     }
 
-		    if (!found){
-		      e = ERR_LIST_NAME;
-		      error(e);
+		          	ListFound = true;
+					cout << "Enter task name: " ;
+			      	getline(cin,vecTask.name);
+			      	cout << "Enter deadline: ";
+					getline(cin,date);
+
+					stringstream ss(date); 
+						  
+				    while (getline(ss, aux, '/')) { 
+						k++;
+
+		   		        if (k==1)
+					       	day = stoi(aux);
+
+						if (k==2)
+					       	month = stoi(aux);
+					    
+				        if (k==3)
+							year = stoi(aux);
+					}
+
+			      	if (checkDate(day, month, year)){
+			      		vecTask.deadline.day = day;
+			      		vecTask.deadline.month = month;
+			      		vecTask.deadline.year = year; 
+			      		cout << "Enter expected time: ";
+			      		cin >> vecTask.time;
+			      		vecTask.isDone = false;
+			      		toDoList.lists[i].tasks.push_back(vecTask);
+			        }
+
+			        else
+			        	error(ERR_DATE);
+					
+			        }
+		        }
 		    }
 
-		    else{
-
-		      	cout << "Enter task name: " ;
-		      	getline(cin,vecTask.name);
-
-		      	cout << "Enter deadline: ";
-		   
-				getline(cin,date);
-
-				stringstream ss(date); 
-			  
-			    while (getline(ss, aux, '/')) { 
-			        k++;
-
-			       if (k==1){
-			       	day = stoi(aux);
-			        }
-
-			       if (k==2){
-			       	month = stoi(aux);
-			        }
-
-			       if (k==3){
-					year = stoi(aux);
-			        }
-			    }
-
-		      	if (checkDate(day, month, year)){
-		      		vecTask.deadline.day = day;
-		      		vecTask.deadline.month = month;
-		      		vecTask.deadline.year = year; 
-
-		      		cout << "Enter expected time: ";
-		      		cin >> vecTask.time;
-		      		vecTask.isDone = false;
-
-		      		toDoList.lists[j].tasks.push_back(vecTask);
-		        }
-
-		        else if (!checkDate(day, month, year)){
-		        	e = ERR_DATE;
-		        	error(e);
-		        }
-			}
-		}
-	}while(nameList.name.length() == 0); 
+		if (!ListFound)
+   	        error(ERR_LIST_NAME);
+			
 }
 void deleteTask(Project &toDoList){
 
 	int i, j, k;
 	Task vecTask;
 	List nameList;
-  	Error e;
   	bool ListEncontrado = false;
   	bool TaskEncontrado = false;
-
-  	do{
-    	cout << "Enter list name: ";
-    	getline(cin,nameList.name);
-
-   		if (nameList.name.length() == 0){
-    	 e = ERR_EMPTY;
-     	 error(e);
-   		 }
     
-	    else {
-	      
-	      	for (i = 0 ; i < toDoList.lists.size(); i++){
+	if (checkListName(nameList)) {
 
-		        if ( toDoList.lists[i].name == nameList.name){
-		          
+		for (i = 0; i < toDoList.lists.size(); i++)
+	      	{
+		        if (toDoList.lists[i].name == nameList.name){
+
 		          	ListEncontrado = true;
 
-		          	do{
-			        	cout << "Enter task name: ";
-			        	getline(cin,vecTask.name);
+				    cout << "Enter task name: ";
+					getline(cin,vecTask.name);
+							          	
+				       	for (j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
 
-			        	if (vecTask.name.length() == 0){
-		    			 	e = ERR_EMPTY;
-		     			 	error(e);
-		   		 		}
-			          	
-			          	else{
+			          		if ( toDoList.lists[i].tasks[j].name == vecTask.name){	
+					      		TaskEncontrado = true;
+				       			k = j--;
+				   				toDoList.lists[i].tasks.erase(toDoList.lists[i].tasks.begin()+k);
+		    				}
+		          		}
 
-			          		for (j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
-
-			          			if ( toDoList.lists[i].tasks[j].name == vecTask.name){
-
-			          				TaskEncontrado = true;
-		         					k = j--;
-		         					toDoList.lists[i].tasks.erase(toDoList.lists[i].tasks.begin()+k);
-		         				}
-
-			          		}
-
-			          	}
-			        }while(vecTask.name.length() == 0);
-
-			        if (!TaskEncontrado){
-			        	e = ERR_TASK_NAME;
-			        	error(e);
-			        }
-			    }
-	     	 
-	  	  	}
-
-	      	if (!ListEncontrado){
-	      	 	e = ERR_LIST_NAME;
-	      		error(e);
-	      	}
-		}
-
-	}while(nameList.name.length() == 0); 
+				    if (!TaskEncontrado)
+	   				 	error(ERR_TASK_NAME);
+		        }
+		    }
+		if (!ListEncontrado)
+   	        error(ERR_LIST_NAME);
+	}
 }
 
 void toggleTask(Project &toDoList){
-
 	int i, j;
 	Task vecTask;
 	List nameList;
-  	Error e;
   	bool ListEncontrado = false;
   	bool TaskEncontrado = false;
 
-  	do{
-    	cout << "Enter list name: ";
-    	getline(cin,nameList.name);
+  	if (checkListName(nameList)) {
 
-   		if (nameList.name.length() == 0){
-    	 e = ERR_EMPTY;
-     	 error(e);
-   		 }
-    
-	    else {
-	      
-	      	for (i = 0 ; i < toDoList.lists.size(); i++){
+		for (i = 0; i < toDoList.lists.size(); i++)
+	      	{
+		        if (toDoList.lists[i].name == nameList.name){
 
-		        if ( toDoList.lists[i].name == nameList.name){
-		          
 		          	ListEncontrado = true;
 
-		          	do{
-			        	cout << "Enter task name: ";
-			        	getline(cin,vecTask.name);
+				    cout << "Enter task name: ";
+					getline(cin,vecTask.name);
+							          	
+					for (j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
 
-			        	if (vecTask.name.length() == 0){
-		    			 	e = ERR_EMPTY;
-		     			 	error(e);
-		   		 		}
-			          	
-			          	else{
+				   		if ( toDoList.lists[i].tasks[j].name == vecTask.name){
+					      		
+				      		TaskEncontrado = true;
+			       			if (toDoList.lists[i].tasks[j].isDone)
+								toDoList.lists[i].tasks[j].isDone = false;
 
-			          		for (j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
+							else
+								toDoList.lists[i].tasks[j].isDone = true;
+			   			}
+		       		}
+	           	}
+	        }
 
-			          			if ( toDoList.lists[i].tasks[j].name == vecTask.name){
+	    if (!TaskEncontrado)
+	   			 	error(ERR_TASK_NAME);
+    }
 
-			          				TaskEncontrado = true;
-		         					
-		         					if (toDoList.lists[i].tasks[j].isDone){
-		         						toDoList.lists[i].tasks[j].isDone = false;
-		         					}
-		         					
-		         					else{
-
-
-		         						toDoList.lists[i].tasks[j].isDone = true;
-		         					}
-		         				}
-			          		}
-			          	}
-			        }while(vecTask.name.length() == 0);
-
-			        if (!TaskEncontrado){
-					
-			        	e = ERR_TASK_NAME;
-			        	error(e);
-					}
-			    }
-	  	  	}
-
-	      	if (!ListEncontrado){
-	      	 	e = ERR_LIST_NAME;
-	      		error(e);
-	      	}
-		}
-
-	}while(nameList.name.length() == 0); 
-
+	if (!ListEncontrado)
+        error(ERR_LIST_NAME);
 
 }
 void report(const Project &toDoList){
 
 	int timeLeft = 0, timeDone = 0, countLeft= 0, countDone = 0;
-	int PriorDay = 32, PriorMonth = 12, PriorYear = 2100;
+	int PriorDay = 31 + 1 , PriorMonth = 12, PriorYear = 2100;
 	string highestName;
 	int currentDay, currentMonth, currentYear; 
 
 	cout << "Name: "<< toDoList.name << endl;
-	cout << "Description: "<< toDoList.description << endl;
-
+	
+	if (toDoList.description.length()!=0)
+		cout << "Description: "<< toDoList.description << endl;
+	
 	for (int i = 0 ; i < toDoList.lists.size(); i++){
 
 		cout << toDoList.lists[i].name << " " << endl;
@@ -420,10 +290,7 @@ void report(const Project &toDoList){
 				cout << "[ ] ";
 				timeLeft = timeLeft + toDoList.lists[i].tasks[j].time;
 				countLeft++;
-
-
 				cout << "(" << toDoList.lists[i].tasks[j].time << ") ";
-
 				cout << toDoList.lists[i].tasks[j].deadline.year << "-";
 				cout << toDoList.lists[i].tasks[j].deadline.month << "-";
 				cout << toDoList.lists[i].tasks[j].deadline.day;
@@ -431,7 +298,6 @@ void report(const Project &toDoList){
 				currentYear = toDoList.lists[i].tasks[j].deadline.year;
 				currentMonth = toDoList.lists[i].tasks[j].deadline.month;
 				currentDay = toDoList.lists[i].tasks[j].deadline.day;
-
 
 				if (PriorYear >= currentYear){
 					
@@ -450,19 +316,12 @@ void report(const Project &toDoList){
 							PriorYear = currentYear;
 							highestName = toDoList.lists[i].tasks[j].name;
 						}
-
 					}
-					
-
 				}
-				
-				
 				cout << " : " << toDoList.lists[i].tasks[j].name << endl;
-
 			}
 
 			else{
-
 
 				cout << "[X] ";
 				cout << "(" << toDoList.lists[i].tasks[j].time << ") ";
@@ -476,15 +335,29 @@ void report(const Project &toDoList){
 				cout << " : " << toDoList.lists[i].tasks[j].name << endl;
 			}
 		}
-
 	}
 
 	cout << "Total left: " << countLeft << " (" << timeLeft << " minutes)" << endl;
 	cout << "Total done: "<< countDone << " (" << timeDone << " minutes)" << endl;
 	cout << "Highest priority: " << highestName << " (";
 	cout << PriorYear << "-" << PriorMonth << "-" << PriorDay << ")" << endl;
-
 	cout << endl;
+}
+
+
+bool checkListName(List &nameList){
+
+	do{
+    	cout << "Enter list name: ";
+    	getline(cin,nameList.name);
+
+   		if (nameList.name.length() == 0)
+     		error(ERR_EMPTY);
+
+   	}while(nameList.name.length() == 0);
+
+   	return true;
+
 }
 
 bool checkDate(int day, int month, int year){
