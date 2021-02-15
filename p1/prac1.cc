@@ -339,8 +339,13 @@ void report(const Project &toDoList){
 
 	cout << "Total left: " << countLeft << " (" << timeLeft << " minutes)" << endl;
 	cout << "Total done: "<< countDone << " (" << timeDone << " minutes)" << endl;
+	
+	if (PriorDay!=32){
+
 	cout << "Highest priority: " << highestName << " (";
 	cout << PriorYear << "-" << PriorMonth << "-" << PriorDay << ")" << endl;
+	
+	}
 	cout << endl;
 }
 
@@ -398,7 +403,6 @@ int main(){
     showMainMenu();
     cin >> option;
     cin.get();
-    cout << endl;
     
     switch(option){
       case '1': editProject(toDoList);
