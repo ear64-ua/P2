@@ -9,7 +9,9 @@
 using namespace std;
 
 const string T_NAME = "Enter task name: " ;
-
+const int MAX_DAY = 31 + 1;
+const int MAX_MONTH = 12;
+const int MAX_YEAR = 2100;
 
 struct Date{
   int day;
@@ -44,9 +46,6 @@ enum Error{
   ERR_DATE,
   ERR_TIME
 };
-
-bool checkDate(int , int , int);
-bool checkListName(List &);
 
 void error(Error e){
   switch(e){
@@ -88,12 +87,27 @@ void editProject(Project &toDoList){
       cout << "Enter project name: ";
       getline(cin,toDoList.name);
 
-   if (toDoList.name.length() == 0){
-      error(ERR_EMPTY);
-	    }
+      if (toDoList.name.length() == 0)
+         error(ERR_EMPTY);
+      
    }while(toDoList.name.length() == 0);
    cout << "Enter project description: ";
    getline(cin,toDoList.description);
+}
+
+bool checkListName(List &nameList){
+
+   do{
+      cout << "Enter list name: ";
+      getline(cin,nameList.name);
+
+      if (nameList.name.length() == 0)
+         error(ERR_EMPTY);
+
+   }while(nameList.name.length() == 0);
+
+   return true;
+
 }
 
 void addList(Project &toDoList){
@@ -138,140 +152,160 @@ void deleteList(Project &toDoList){
       error(ERR_LIST_NAME);
 }
 
+bool searchList (Project &toDoList,Task &vecTask, unsigned &k){
+   unsigned i;
+   List nameList;
+   bool ListFound = false;
+   bool valid = true;
+   if (checkListName(nameList)) {
+
+      for (i = 0; i < toDoList.lists.size(); i++)
+      {
+         if (toDoList.lists[i].name == nameList.name){
+            k = i;
+            ListFound = true;
+            cout << T_NAME;
+            getline(cin,vecTask.name);
+         }
+      }
+   
+      if (!ListFound){
+         error(ERR_LIST_NAME);
+         valid = false;
+      }
+   }
+
+   return valid;
+}
+
+bool checkDate(int day, int month, int year){
+
+   bool bisiesto = false;
+   bool valido = false;
+
+   // comprobar si el año es bisiesto
+
+   if((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) 
+      bisiesto = true;
+
+   if (year > 1999 && year < 2101){
+      if (month > 0 && month < 13){
+
+         // días de febrero según año 
+
+         if (bisiesto && month == 2 && day > 0 && day <= 29)
+            valido = true;
+
+         else if (!bisiesto && month == 2 && day > 0 && day <= 28)
+            valido = true;
+    
+         // meses del año con 31 días
+
+         else if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 
+                   || month == 10 || month == 12 ) && day > 0 && day <= 31)          
+            valido = true;
+  
+         // meses del año con 30 días
+
+         else if ((month == 4 || month == 6 || month == 9 ||  
+                    month == 11 ) && day > 0 && day <= 30)   
+            valido = true;
+         }
+   }
+   else
+      valido = false;
+
+   return valido;
+}
+
+
 void addTask(Project &toDoList){
 
-	Task vecTask;
-	List nameList;
-  	string date, aux;
-  	bool ListFound = false;
-  	int day, month, year, k = 0;
+   Task vecTask;
+   List nameList;
+   string date, aux;
+   int day, month, year, k = 0;
+   unsigned i;
 
-	if (checkListName(nameList)) {
+   if (searchList(toDoList,vecTask,i)){ 
+      cout << "Enter deadline: ";
+      getline(cin,date);
+      stringstream ss(date); 
+              
+      while (getline(ss, aux, '/')) { 
+         k++;
 
-		for (unsigned int i = 0; i < toDoList.lists.size(); i++)
-	      	{
-		        if (toDoList.lists[i].name == nameList.name){
+         if (k==1)
+            day = stoi(aux);
 
-		          	ListFound = true;
-					cout << T_NAME ;
-			      	getline(cin,vecTask.name);
-			      	cout << "Enter deadline: ";
-					getline(cin,date);
+         if (k==2)
+            month = stoi(aux);
+             
+         if (k==3)
+            year = stoi(aux);
+       }
 
-					stringstream ss(date); 
-						  
-				    while (getline(ss, aux, '/')) { 
-					k++;
-
-		   		        if (k==1)
-					       day = stoi(aux);
-
-					if (k==2)
-					       month = stoi(aux);
-					   
-				        if (k==3)
-						year = stoi(aux);
-					}
-
-			      	if (checkDate(day, month, year)){
-			      		vecTask.deadline.day = day;
-			      		vecTask.deadline.month = month;
-			      		vecTask.deadline.year = year; 
-			      		cout << "Enter expected time: ";
-			      		cin >> vecTask.time;
-			      		vecTask.isDone = false;
-			      		toDoList.lists[i].tasks.push_back(vecTask);
-			        }
-
-			        else
-			        	error(ERR_DATE);
-					
-			        }
-		        }
-		    }
-
-		if (!ListFound)
-   	        error(ERR_LIST_NAME);
-			
+      if (checkDate(day, month, year)){
+         vecTask.deadline.day = day;
+         vecTask.deadline.month = month;
+         vecTask.deadline.year = year; 
+         cout << "Enter expected time: ";
+         cin >> vecTask.time;
+         vecTask.isDone = false;
+         toDoList.lists[i].tasks.push_back(vecTask);            
+      }
+      else
+         error(ERR_DATE);
+  }   
 }
+
 void deleteTask(Project &toDoList){
 
-	int k;
-	Task vecTask;
-	List nameList;
-  	bool ListEncontrado = false;
-  	bool TaskEncontrado = false;
-    
-	if (checkListName(nameList)) {
+   unsigned j, i;
+   int k;
+   bool TaskEncontrado = false;
+   Task vecTask;
+  
+   if (searchList(toDoList,vecTask,i)){          
+      for ( j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
 
-		for (unsigned int i = 0; i < toDoList.lists.size(); i++)
-	      	{
-		        if (toDoList.lists[i].name == nameList.name){
+         if ( toDoList.lists[i].tasks[j].name == vecTask.name){ 
+            TaskEncontrado = true;
+            k = j--;
+            toDoList.lists[i].tasks.erase(toDoList.lists[i].tasks.begin()+k);
+         }
+      }
 
-		          	ListEncontrado = true;
-
-				    cout << T_NAME;
-					getline(cin,vecTask.name);
-							          	
-				       	for (unsigned int j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
-
-			          		if ( toDoList.lists[i].tasks[j].name == vecTask.name){	
-					      		TaskEncontrado = true;
-				       			k = j--;
-				   				toDoList.lists[i].tasks.erase(toDoList.lists[i].tasks.begin()+k);
-		    				}
-		          		}
-
-				    if (!TaskEncontrado)
-	   				 	error(ERR_TASK_NAME);
-		        }
-		    }
-		if (!ListEncontrado)
-   	        error(ERR_LIST_NAME);
-	}
+   if (!TaskEncontrado)
+      error(ERR_TASK_NAME);
+  }
 }
 
 void toggleTask(Project &toDoList){
 
-	unsigned i,j ;
-	Task vecTask;
-	List nameList;
-  	bool ListEncontrado = false;
-  	bool TaskEncontrado = false;
+   unsigned i,j ;
+   Task vecTask;
+   List nameList;
+   bool TaskEncontrado = false;
 
-  	if (checkListName(nameList)) {
+   if (searchList(toDoList, vecTask, i)) {                
 
-		for ( i = 0;  i < toDoList.lists.size(); i++)
-	      	{
-		        if (toDoList.lists[i].name == nameList.name){
+      for ( j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
 
-		          	ListEncontrado = true;
+         if ( toDoList.lists[i].tasks[j].name == vecTask.name){
+                    
+            TaskEncontrado = true;
+            if (toDoList.lists[i].tasks[j].isDone)
+               toDoList.lists[i].tasks[j].isDone = false;
 
-				    cout << T_NAME;
-					getline(cin,vecTask.name);
-							          	
-					for ( j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
+            else
+               toDoList.lists[i].tasks[j].isDone = true;
+         }
+      }
+   }
 
-				   		if ( toDoList.lists[i].tasks[j].name == vecTask.name){
-					      		
-				      		TaskEncontrado = true;
-			       			if (toDoList.lists[i].tasks[j].isDone)
-								toDoList.lists[i].tasks[j].isDone = false;
-
-							else
-								toDoList.lists[i].tasks[j].isDone = true;
-			   			}
-		       		}
-	           	}
-	        }
-
-	    if (!TaskEncontrado)
-	   			 	error(ERR_TASK_NAME);
-    }
-
-	if (!ListEncontrado)
-        error(ERR_LIST_NAME);
-
+   if (!TaskEncontrado)
+      error(ERR_TASK_NAME);
 }
 
 void Priority(const Project &toDoList,int &PriorDay,int &PriorMonth, int &PriorYear, string &highestName, unsigned i , unsigned j){
@@ -283,25 +317,23 @@ void Priority(const Project &toDoList,int &PriorDay,int &PriorMonth, int &PriorY
    currentDay = toDoList.lists[i].tasks[j].deadline.day;
 
    if (PriorYear >= currentYear){
-					
-            if (PriorMonth > currentMonth){
-
-               PriorDay = currentDay;
-               PriorMonth = currentMonth;
-               PriorYear = currentYear;
-               highestName = toDoList.lists[i].tasks[j].name;
-            }	
-            else if (PriorMonth == currentMonth){
-
-               if (PriorDay > currentDay){
-                  PriorDay = currentDay;
-                  PriorMonth = currentMonth;
-                  PriorYear = currentYear;
-                  highestName = toDoList.lists[i].tasks[j].name;
-               }
-            }
+          
+      if (PriorMonth > currentMonth){
+         PriorDay = currentDay;
+         PriorMonth = currentMonth;
+         PriorYear = currentYear;
+         highestName = toDoList.lists[i].tasks[j].name;
+      } 
+      
+      else if (PriorMonth == currentMonth){
+         if (PriorDay > currentDay){
+            PriorDay = currentDay;
+            PriorMonth = currentMonth;
+            PriorYear = currentYear;
+            highestName = toDoList.lists[i].tasks[j].name;
          }
-
+      }
+   }
 }
 
 void PrintDone(const Project &toDoList, unsigned i, int &countDone, int &timeDone){
@@ -318,7 +350,6 @@ void PrintDone(const Project &toDoList, unsigned i, int &countDone, int &timeDon
          cout << toDoList.lists[i].tasks[j].deadline.day;
          cout << " : " << toDoList.lists[i].tasks[j].name << endl;
       }
-   
    }
 }
 
@@ -342,90 +373,32 @@ void PrintLeft(const Project &toDoList, unsigned i, int &countLeft, int &timeLef
    }
 }
 
-
 void report(const Project &toDoList){
 
    int timeLeft = 0, timeDone = 0, countLeft= 0, countDone = 0;
    unsigned i;
-   int PriorDay= 31 + 1, PriorMonth = 12, PriorYear = 2100;
+   int PriorDay= MAX_DAY, PriorMonth = MAX_MONTH, PriorYear = MAX_YEAR;
    string highestName;
    cout << "Name: "<< toDoList.name << endl;
-	
+  
    if (toDoList.description.length()!=0)
-		cout << "Description: "<< toDoList.description << endl;
-	
+    cout << "Description: "<< toDoList.description << endl;
+  
    for ( i = 0 ; i < toDoList.lists.size(); i++){
 
       cout << toDoList.lists[i].name << " " << endl;
       PrintLeft(toDoList, i, countLeft, timeLeft,PriorDay, PriorMonth,  PriorYear, highestName);   
       PrintDone(toDoList, i, countDone, timeDone);
-	}
+  }
 
-	cout << "Total left: " << countLeft << " (" << timeLeft << " minutes)" << endl;
-	cout << "Total done: "<< countDone << " (" << timeDone << " minutes)" << endl;
-	if (PriorDay != 32){
-		cout << "Highest priority: " << highestName << " (";
-		cout << PriorYear << "-" << PriorMonth << "-" << PriorDay << ")" << endl;
-	}
-	cout << endl;
+  cout << "Total left: " << countLeft << " (" << timeLeft << " minutes)" << endl;
+  cout << "Total done: "<< countDone << " (" << timeDone << " minutes)" << endl;
+  if (PriorDay != MAX_DAY){
+    cout << "Highest priority: " << highestName << " (";
+    cout << PriorYear << "-" << PriorMonth << "-" << PriorDay << ")" << endl;
+  }
+  cout << endl;
 }
-
-
-bool checkListName(List &nameList){
-
-   do{
-      cout << "Enter list name: ";
-      getline(cin,nameList.name);
-
-      if (nameList.name.length() == 0)
-         error(ERR_EMPTY);
-
-   }while(nameList.name.length() == 0);
-
-   return true;
-
-}
-
-bool checkDate(int day, int month, int year){
-
-   bool bisiesto = false;
-   bool valid = false;
-
-   // comprobar si el año es bisiesto
-
-   if((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) 
-      bisiesto = true;
-
-   if (year > 1999 && year < 2101){
-      if (month > 0 && month < 13){
-
-         // días de febrero según año 
-
-         if (bisiesto && month == 2 && day > 0 && day <= 29)
-            valid = true;
-
-         else if (!bisiesto && month == 2 && day > 0 && day <= 28)
-            valid = true;
-		
-         // meses del año con 31 días
-
-         else if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 
-                   || month == 10 || month == 12 ) && day > 0 && day <= 31)          
-            valid = true;
-	
-         // meses del año con 30 días
-
-         else if ((month == 4 || month == 6 || month == 9 ||  
-                    month == 11 ) && day > 0 && day <= 30)   
-            valid = true;
-         }
-   }
-   else
-      valid = false;
-
-   return valid;
-}
-
 
 int main(){
   Project toDoList;
