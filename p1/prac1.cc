@@ -8,6 +8,8 @@
 
 using namespace std;
 
+const string P_NAME = "Enter project name: " ;
+const string L_NAME = "Enter list name: " ;
 const string T_NAME = "Enter task name: " ;
 const int MAX_DAY = 31 + 1;
 const int MAX_MONTH = 12;
@@ -81,42 +83,45 @@ void showMainMenu(){
        << "Option: ";
 }
 
-void editProject(Project &toDoList){
+bool checkName(string &name, bool IsList){
 
    do{
-      cout << "Enter project name: ";
-      getline(cin,toDoList.name);
+      if (IsList)
+         cout << L_NAME;
+      else 
+         cout << P_NAME;
 
-      if (toDoList.name.length() == 0)
-         error(ERR_EMPTY);
-      
-   }while(toDoList.name.length() == 0);
-   cout << "Enter project description: ";
-   getline(cin,toDoList.description);
-}
+      getline(cin,name);
 
-bool checkListName(List &nameList){
-
-   do{
-      cout << "Enter list name: ";
-      getline(cin,nameList.name);
-
-      if (nameList.name.length() == 0)
+      if (name.length() == 0)
          error(ERR_EMPTY);
 
-   }while(nameList.name.length() == 0);
+   }while(name.length() == 0);
 
    return true;
 
 }
 
+void editProject(Project &toDoList){
+   
+   string name;
+   bool IsList = false;
+   checkName(name, IsList);
+   toDoList.name = name;
+   cout << "Enter project description: ";
+   getline(cin,toDoList.description);
+}
+
 void addList(Project &toDoList){
 
+
+   string name;
    List nameList;
-   bool repeated = false;
+   bool repeated = false, IsList = true;
    unsigned i;
 
-   checkListName(nameList); 
+   checkName(name, IsList);
+   nameList.name = name; 
 
    for ( i = 0; i < toDoList.lists.size(); i++){
 
@@ -132,13 +137,15 @@ void addList(Project &toDoList){
 }
 
 void deleteList(Project &toDoList){
-
+   
+   string name;
    List nameList;
    unsigned i, j;
-   bool found = false;
+   bool found = false, IsList = true;
 
-   checkListName(nameList);
-      
+   checkName(name, IsList);
+   nameList.name = name;
+
    for (i = 0 ; i < toDoList.lists.size(); i++){
 
        if ( toDoList.lists[i].name == nameList.name){
@@ -153,11 +160,14 @@ void deleteList(Project &toDoList){
 }
 
 bool searchList (Project &toDoList,Task &vecTask, unsigned &k){
+   string name;
    unsigned i;
    List nameList;
-   bool ListFound = false;
+   bool ListFound = false, IsList = true;
    bool valid = true;
-   if (checkListName(nameList)) {
+   if (checkName(name, IsList)) {
+
+   	  nameList.name = name;
 
       for (i = 0; i < toDoList.lists.size(); i++)
       {
