@@ -1,0 +1,47 @@
+             TIEMPO DEDICADO A LA PRÁCTICA 1
+
+
+Preparación
+
+   Investigación sobre
+   vectores y strings  --------------------- 30 min                     
+
+   Entender la 
+   estructura          --------------------- 25 min
+   del programa
+
+ 		          Total Preparación: 55 min
+___________________________________________________
+
+Módulos
+
+   Módulo checkName    --------------------- 10 min
+   Módulo editProject  ---------------------  5 min
+   Módulo addList      --------------------- 20 min 
+   Módulo searchList   --------------------- 20 min
+   Módulo checkDate    --------------------- 15 min
+   Módulo addTask      --------------------- 30 min
+   Módulo deleteTask   --------------------- 20 min
+   Módulo toggleTask   --------------------- 10 min
+   Módulo Priority     --------------------- 40 min
+   Módulo Print        ---------------------  3 min
+   Módulo PrintDone    ---------------------  5 min
+   Módulo PrintLeft    ---------------------  5 min
+   Módulo report       --------------------- 30 min
+
+   		         Total Módulos: 3 hr 33 min
+___________________________________________________ 
+
+Corrección de código
+
+   Indentación de código        ------------  5 min
+   Autocorrector                ------------  5 min
+   Añadir comentarios           ------------  5 min
+
+		 Total Corrección de código: 15 min
+
+___________________________________________________
+
+				Total: 4 hrs 43 min
+
+ENRIQUE ABMA ROMERO
