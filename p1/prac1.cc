@@ -106,6 +106,7 @@ void editProject(Project &toDoList){
    
    string name;
    bool IsList = false;
+
    checkName(name, IsList);
    toDoList.name = name;
    cout << "Enter project description: ";
@@ -129,6 +130,7 @@ void addList(Project &toDoList){
          repeated = true;
    }
 
+   // si está repetido, dará error
    if (repeated)
       error(ERR_LIST_NAME);
 
@@ -163,8 +165,8 @@ bool searchList (Project &toDoList,Task &vecTask, unsigned &k){
    string name;
    unsigned i;
    List nameList;
-   bool ListFound = false, IsList = true;
-   bool valid = true;
+   bool ListFound = false, IsList = true, valid = true;
+
    if (checkName(name, IsList)) {
 
    	  nameList.name = name;
@@ -209,13 +211,13 @@ bool checkDate(int day, int month, int year){
          else if (!bisiesto && month == 2 && day > 0 && day <= 28)
             valido = true;
     
-         // meses del año con 31 días
+        // meses del año con 31 días
 
          else if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 
                    || month == 10 || month == 12 ) && day > 0 && day <= 31)          
             valido = true;
   
-         // meses del año con 30 días
+        // meses del año con 30 días
 
          else if ((month == 4 || month == 6 || month == 9 ||  
                     month == 11 ) && day > 0 && day <= 30)   
@@ -241,7 +243,9 @@ void addTask(Project &toDoList){
       cout << "Enter deadline: ";
       getline(cin,date);
       stringstream ss(date); 
-              
+      
+      // bucle que guarda los caracteres en aux cada vez que se encuentra un '/'
+        
       while (getline(ss, aux, '/')) { 
          k++;
 
@@ -255,14 +259,25 @@ void addTask(Project &toDoList){
             year = stoi(aux);
        }
 
+      // si la fecha es correcta...
+       
       if (checkDate(day, month, year)){
+
          vecTask.deadline.day = day;
          vecTask.deadline.month = month;
-         vecTask.deadline.year = year; 
+         vecTask.deadline.year = year;
+
+         vecTask.isDone = false;
+
          cout << "Enter expected time: ";
          cin >> vecTask.time;
-         vecTask.isDone = false;
-         toDoList.lists[i].tasks.push_back(vecTask);            
+
+         if (vecTask.time >= 1 && vecTask.time <= 180)
+         	toDoList.lists[i].tasks.push_back(vecTask);
+         
+         else
+            error(ERR_TIME);
+                      
       }
       else
          error(ERR_DATE);
@@ -275,7 +290,6 @@ void deleteTask(Project &toDoList){
    int k;
    bool TaskEncontrado = false;
    Task vecTask;
-  
    if (searchList(toDoList,vecTask,i)){          
       for ( j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
 
@@ -326,6 +340,7 @@ void Priority(const Project &toDoList,int &PriorDay,int &PriorMonth, int &PriorY
    currentMonth = toDoList.lists[i].tasks[j].deadline.month;
    currentDay = toDoList.lists[i].tasks[j].deadline.day;
 
+   // se guarda el valor de la fecha que tenga más prioridad
    if (PriorYear >= currentYear){
           
       if (PriorMonth > currentMonth){
@@ -378,7 +393,6 @@ void PrintLeft(const Project &toDoList, unsigned i, int &countLeft, int &timeLef
          timeLeft = timeLeft + toDoList.lists[i].tasks[j].time;
          countLeft++;
          Print(toDoList, i, j);
-         
          Priority(toDoList, PriorDay,PriorMonth,PriorYear, highestName, i , j);
 
          cout << " : " << toDoList.lists[i].tasks[j].name << endl;
@@ -398,7 +412,8 @@ void report(const Project &toDoList){
     cout << "Description: "<< toDoList.description << endl;
   
    for ( i = 0 ; i < toDoList.lists.size(); i++){
-
+      
+      // muestra primero las que no están hechas
       cout << toDoList.lists[i].name << " " << endl;
       PrintLeft(toDoList, i, countLeft, timeLeft,PriorDay, PriorMonth,  PriorYear, highestName);   
       PrintDone(toDoList, i, countDone, timeDone);
@@ -406,6 +421,7 @@ void report(const Project &toDoList){
 
   cout << "Total left: " << countLeft << " (" << timeLeft << " minutes)" << endl;
   cout << "Total done: "<< countDone << " (" << timeDone << " minutes)" << endl;
+
   if (PriorDay != MAX_DAY){
     cout << "Highest priority: " << highestName << " (";
     cout << PriorYear << "-" << PriorMonth << "-" << PriorDay << ")" << endl;
