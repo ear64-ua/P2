@@ -346,18 +346,24 @@ void Priority(const Project &toDoList,int &PriorDay,int &PriorMonth, int &PriorY
    }
 }
 
+void Print(const Project &toDoList, unsigned i, unsigned j){
+   
+   cout << "(" << toDoList.lists[i].tasks[j].time << ") ";
+   cout << toDoList.lists[i].tasks[j].deadline.year << "-";
+   cout << toDoList.lists[i].tasks[j].deadline.month << "-";
+   cout << toDoList.lists[i].tasks[j].deadline.day;
+}
+
 void PrintDone(const Project &toDoList, unsigned i, int &countDone, int &timeDone){
 
    for ( unsigned j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
       
       if (toDoList.lists[i].tasks[j].isDone){
          cout << "[X] ";
-         cout << "(" << toDoList.lists[i].tasks[j].time << ") ";
+         Print(toDoList, i, j);
          timeDone = timeDone + toDoList.lists[i].tasks[j].time;
          countDone++;
-         cout << toDoList.lists[i].tasks[j].deadline.year << "-";
-         cout << toDoList.lists[i].tasks[j].deadline.month << "-";
-         cout << toDoList.lists[i].tasks[j].deadline.day;
+         
          cout << " : " << toDoList.lists[i].tasks[j].name << endl;
       }
    }
@@ -371,10 +377,7 @@ void PrintLeft(const Project &toDoList, unsigned i, int &countLeft, int &timeLef
          cout << "[ ] ";
          timeLeft = timeLeft + toDoList.lists[i].tasks[j].time;
          countLeft++;
-         cout << "(" << toDoList.lists[i].tasks[j].time << ") ";
-         cout << toDoList.lists[i].tasks[j].deadline.year << "-";
-         cout << toDoList.lists[i].tasks[j].deadline.month << "-";
-         cout << toDoList.lists[i].tasks[j].deadline.day;
+         Print(toDoList, i, j);
          
          Priority(toDoList, PriorDay,PriorMonth,PriorYear, highestName, i , j);
 
