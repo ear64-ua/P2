@@ -11,10 +11,17 @@ using namespace std;
 const string P_NAME = "Enter project name: " ;
 const string L_NAME = "Enter list name: " ;
 const string T_NAME = "Enter task name: " ;
+const string P_DESC = "Enter project description: ";
+const string DEADLINE = "Enter deadline: ";
+const string EXP_TIME = "Enter expected time: ";
 
+const int EMPTY = 0;
+const int MAX_TIME = 180;
+const int MIN_TIME = 1;
 const int MAX_DAY = 31 + 1;
 const int MAX_MONTH = 12;
 const int MAX_YEAR = 2100;
+const int MIN_YEAR = 2000;
 
 struct Date{
   int day;
@@ -94,10 +101,10 @@ bool checkName(string &name, bool IsList){
 
       getline(cin,name);
 
-      if (name.length() == 0)
+      if (name.length() == EMPTY)
          error(ERR_EMPTY);
 
-   }while(name.length() == 0);
+   }while(name.length() == EMPTY);
 
    return true;
 
@@ -110,7 +117,7 @@ void editProject(Project &toDoList){
 
    checkName(name, IsList);
    toDoList.name = name;
-   cout << "Enter project description: ";
+   cout << P_DESC;
    getline(cin,toDoList.description);
 }
 
@@ -202,7 +209,7 @@ bool checkDate(int day, int month, int year){
    if((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) 
       bisiesto = true;
 
-   if (year > 1999 && year < 2101){
+   if (year >= MIN_YEAR && year <= MAX_YEAR){
       if (month > 0 && month < 13){
 
          // días de febrero según año 
@@ -242,7 +249,7 @@ void addTask(Project &toDoList){
    unsigned i;
 
    if (searchList(toDoList,vecTask,i)){ 
-      cout << "Enter deadline: ";
+      cout << DEADLINE;
       getline(cin,date);
       stringstream ss(date); 
       
@@ -271,10 +278,10 @@ void addTask(Project &toDoList){
 
          vecTask.isDone = false;
 
-         cout << "Enter expected time: ";
+         cout << EXP_TIME;
          cin >> vecTask.time;
 
-         if (vecTask.time >= 1 && vecTask.time <= 180)
+         if (vecTask.time >= MIN_TIME && vecTask.time <= MAX_TIME)
          	toDoList.lists[i].tasks.push_back(vecTask);
          
          else
@@ -336,7 +343,7 @@ void toggleTask(Project &toDoList){
       error(ERR_TASK_NAME);
 }
 
-void Priority(const Project &toDoList,int &PriorDay,int &PriorMonth, int &PriorYear, string &highestName, unsigned i , unsigned j){
+void priority(const Project &toDoList,int &PriorDay,int &PriorMonth, int &PriorYear, string &highestName, unsigned i , unsigned j){
    
    int currentDay, currentMonth, currentYear;
 
@@ -366,7 +373,7 @@ void Priority(const Project &toDoList,int &PriorDay,int &PriorMonth, int &PriorY
    }
 }
 
-void Print(const Project &toDoList, unsigned i, unsigned j){
+void print(const Project &toDoList, unsigned i, unsigned j){
    
    cout << "(" << toDoList.lists[i].tasks[j].time << ") ";
    cout << toDoList.lists[i].tasks[j].deadline.year << "-";
@@ -374,7 +381,7 @@ void Print(const Project &toDoList, unsigned i, unsigned j){
    cout << toDoList.lists[i].tasks[j].deadline.day;
 }
 
-void PrintDone(const Project &toDoList, unsigned i, int &countDone, int &timeDone){
+void printDone(const Project &toDoList, unsigned i, int &countDone, int &timeDone){
 
    for ( unsigned j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
       
@@ -389,7 +396,7 @@ void PrintDone(const Project &toDoList, unsigned i, int &countDone, int &timeDon
    }
 }
 
-void PrintLeft(const Project &toDoList, unsigned i, int &countLeft, int &timeLeft, int &PriorDay,int &PriorMonth, int &PriorYear, string &highestName){
+void printLeft(const Project &toDoList, unsigned i, int &countLeft, int &timeLeft, int &PriorDay,int &PriorMonth, int &PriorYear, string &highestName){
    
    for ( unsigned j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
       
@@ -413,7 +420,7 @@ void report(const Project &toDoList){
 
    cout << "Name: "<< toDoList.name << endl;
   
-   if (toDoList.description.length()!=0)
+   if (toDoList.description.length() != EMPTY)
     cout << "Description: "<< toDoList.description << endl;
   
    for ( i = 0 ; i < toDoList.lists.size(); i++){
