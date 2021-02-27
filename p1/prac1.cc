@@ -199,6 +199,30 @@ bool searchList (Project &toDoList,Task &vecTask, unsigned &k){
    return valid;
 }
 
+void returnDate(string date,int &day,int &month,int &year){
+
+   string aux;
+   int k = 0;
+
+   stringstream ss(date); 
+      
+      // bucle que guarda los caracteres en aux cada vez que se encuentra un '/'
+        
+      while (getline(ss, aux, '/')) { 
+         k++;
+
+         if (k==1)
+            day = stoi(aux);
+
+         if (k==2)
+            month = stoi(aux);
+             
+         if (k==3)
+            year = stoi(aux);
+       }
+
+}
+
 bool checkDate(int day, int month, int year){
 
    bool bisiesto = false;
@@ -244,29 +268,15 @@ void addTask(Project &toDoList){
 
    Task vecTask;
    List nameList;
-   string date, aux;
-   int day, month, year, k = 0;
+   int day, month, year;
    unsigned i;
+   string date;
 
    if (searchList(toDoList,vecTask,i)){ 
       cout << DEADLINE;
-      getline(cin,date);
-      stringstream ss(date); 
       
-      // bucle que guarda los caracteres en aux cada vez que se encuentra un '/'
-        
-      while (getline(ss, aux, '/')) { 
-         k++;
-
-         if (k==1)
-            day = stoi(aux);
-
-         if (k==2)
-            month = stoi(aux);
-             
-         if (k==3)
-            year = stoi(aux);
-       }
+      getline(cin,date);
+      returnDate(date,day,month,year);
 
       // si la fecha es correcta...
 
@@ -388,7 +398,7 @@ void printDone(const Project &toDoList, unsigned i, int &countDone, int &timeDon
       if (toDoList.lists[i].tasks[j].isDone){
 
          cout << "[X] ";
-         Print(toDoList, i, j);
+         print(toDoList, i, j);
          cout << " : " << toDoList.lists[i].tasks[j].name << endl;
          timeDone = timeDone + toDoList.lists[i].tasks[j].time;
          countDone++; 
@@ -404,8 +414,8 @@ void printLeft(const Project &toDoList, unsigned i, int &countLeft, int &timeLef
          cout << "[ ] ";
          timeLeft = timeLeft + toDoList.lists[i].tasks[j].time;
          countLeft++;
-         Print(toDoList, i, j);
-         Priority(toDoList, PriorDay,PriorMonth,PriorYear, highestName, i , j);
+         print(toDoList, i, j);
+         priority(toDoList, PriorDay,PriorMonth,PriorYear, highestName, i , j);
          cout << " : " << toDoList.lists[i].tasks[j].name << endl;
       }   
    }
@@ -427,8 +437,8 @@ void report(const Project &toDoList){
       
       // muestra primero las que no están hechas
       cout << toDoList.lists[i].name << " " << endl;
-      PrintLeft(toDoList, i, countLeft, timeLeft,PriorDay, PriorMonth,  PriorYear, highestName);   
-      PrintDone(toDoList, i, countDone, timeDone);
+      printLeft(toDoList, i, countLeft, timeLeft,PriorDay, PriorMonth,  PriorYear, highestName);   
+      printDone(toDoList, i, countDone, timeDone);
    }
 
    cout << "Total left: " << countLeft << " (" << timeLeft << " minutes)" << endl;
