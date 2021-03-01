@@ -95,7 +95,7 @@ void error(Error e){
   }
 }
 
-int daysPerMonth(int month){
+int daysPerMonth(int month, bool bisiesto){
 
    switch(month){
       case JANUARY:
@@ -112,6 +112,13 @@ int daysPerMonth(int month){
       case SEPTEMBER:
       case NOVEMBER:
          return 30;
+
+      case FEBRUARY:
+         if (bisiesto)
+         	return 29;
+         else 
+         	return 28;
+
    }
    return 0;
 }
@@ -273,17 +280,9 @@ bool checkDate(int day, int month, int year){
    if (year >= MIN_YEAR && year <= MAX_YEAR){
       if (month > 0 && month < 13){
 
-         // días de febrero según año 
+         // meses del año con 31/30 o febrero con 28/29 días
 
-         if (bisiesto && month == 2 && day >= MIN_DAY && day <= 29)
-            valid = true;
-         
-         else if (!bisiesto && month == 2 && day >= MIN_DAY && day <= 28)
-            valid = true;
-
-         // meses del año con 31/30 días
-
-         else if (day >= MIN_DAY && day <= daysPerMonth(month))          
+         if (day >= MIN_DAY && day <= daysPerMonth(month, bisiesto))          
             valid = true;
        }
    }
