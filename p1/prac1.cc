@@ -18,7 +18,8 @@ const string EXP_TIME = "Enter expected time: ";
 const int EMPTY = 0;
 const int MAX_TIME = 180;
 const int MIN_TIME = 1;
-const int MAX_DAY = 31 + 1;
+const int MAX_DAY = 31;
+const int MIN_DAY = 1;
 const int MAX_MONTH = 12;
 const int MAX_YEAR = 2100;
 const int MIN_YEAR = 2000;
@@ -57,6 +58,21 @@ enum Error{
   ERR_TIME
 };
 
+enum Months{
+	JANUARY = 1,
+	FEBRUARY,
+	MARCH,
+	APRIL,
+	MAY,
+	JUNE,
+	JULY,
+	AUGUST,
+	SEPTEMBER,
+	OCTOBER,
+	NOVEMBER,
+	DECEMBER
+};
+
 void error(Error e){
   switch(e){
     case ERR_OPTION:
@@ -77,6 +93,27 @@ void error(Error e){
     case ERR_TIME:
       cout << "ERROR: wrong expected time" << endl;
   }
+}
+
+int daysPerMonth(int month){
+
+   switch(month){
+      case JANUARY:
+      case MARCH:
+      case MAY:
+      case JULY:
+      case AUGUST:
+      case OCTOBER:
+      case DECEMBER:
+         return 31;
+
+      case APRIL:
+      case JUNE:
+      case SEPTEMBER:
+      case NOVEMBER:
+         return 30;
+   }
+   return 0;
 }
 
 void showMainMenu(){
@@ -206,28 +243,28 @@ void returnDate(string date,int &day,int &month,int &year){
 
    stringstream ss(date); 
       
-      // bucle que guarda los caracteres en aux cada vez que se encuentra un '/'
+   // bucle que guarda los caracteres en aux cada vez que se encuentra un '/'
         
-      while (getline(ss, aux, '/')) { 
-         k++;
+   while (getline(ss, aux, '/')) { 
+      k++;
 
-         if (k==1)
-            day = stoi(aux);
+      if (k==1)
+         day = stoi(aux);
 
-         if (k==2)
-            month = stoi(aux);
+      if (k==2)
+         month = stoi(aux);
              
-         if (k==3)
-            year = stoi(aux);
-       }
+      if (k==3)
+         year = stoi(aux);
+   }
 
 }
 
 bool checkDate(int day, int month, int year){
 
    bool bisiesto = false;
-   bool valido = false;
-
+   bool valid = false;
+   
    // comprobar si el año es bisiesto
 
    if((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) 
@@ -238,29 +275,22 @@ bool checkDate(int day, int month, int year){
 
          // días de febrero según año 
 
-         if (bisiesto && month == 2 && day > 0 && day <= 29)
-            valido = true;
+         if (bisiesto && month == 2 && day >= MIN_DAY && day <= 29)
+            valid = true;
+         
+         else if (!bisiesto && month == 2 && day >= MIN_DAY && day <= 28)
+            valid = true;
 
-         else if (!bisiesto && month == 2 && day > 0 && day <= 28)
-            valido = true;
-    
-        // meses del año con 31 días
+         // meses del año con 31/30 días
 
-         else if ((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || 
-         	       month == 10 || month == 12 ) && day > 0 && day <= 31)          
-            valido = true;
-  
-        // meses del año con 30 días
-
-         else if ((month == 4 || month == 6 || month == 9 ||  
-                   month == 11 ) && day > 0 && day <= 30)   
-            valido = true;
+         else if (day >= MIN_DAY && day <= daysPerMonth(month))          
+            valid = true;
        }
    }
    else
-      valido = false;
+      valid = false;
 
-   return valido;
+   return valid;
 }
 
 
@@ -425,8 +455,10 @@ void report(const Project &toDoList){
 
    int timeLeft = 0, timeDone = 0, countLeft= 0, countDone = 0;
    unsigned i;
-   int PriorDay= MAX_DAY, PriorMonth = MAX_MONTH, PriorYear = MAX_YEAR;
+   int PriorDay = MAX_DAY + 1, PriorMonth = MAX_MONTH, PriorYear = MAX_YEAR;
    string highestName;
+   // se le añade uno a MAX_DAY al tener que inicializar el día con más prioridad que el 
+   // el mayor número que puede ser introducido
 
    cout << "Name: "<< toDoList.name << endl;
   
@@ -444,7 +476,7 @@ void report(const Project &toDoList){
    cout << "Total left: " << countLeft << " (" << timeLeft << " minutes)" << endl;
    cout << "Total done: "<< countDone << " (" << timeDone << " minutes)" << endl;
 
-  if (PriorDay != MAX_DAY){
+  if (PriorDay != MAX_DAY + 1 ){
      cout << "Highest priority: " << highestName << " (";
      cout << PriorYear << "-" << PriorMonth << "-" << PriorDay << ")" << endl;
   }
