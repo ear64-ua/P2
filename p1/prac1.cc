@@ -135,8 +135,9 @@ void showMainMenu(){
        << "Option: ";
 }
 
-bool checkName(string &name, bool IsList){
+string checkName(bool IsList){
 
+   string name;
    do{
       if (IsList)
          cout << L_NAME;
@@ -150,31 +151,25 @@ bool checkName(string &name, bool IsList){
 
    }while(name.length() == EMPTY);
 
-   return true;
-
+   return name;
 }
 
 void editProject(Project &toDoList){
    
-   string name;
    bool IsList = false;
 
-   checkName(name, IsList);
-   toDoList.name = name;
+   toDoList.name = checkName(IsList);
    cout << P_DESC;
    getline(cin,toDoList.description);
 }
 
 void addList(Project &toDoList){
 
-
-   string name;
    List nameList;
    bool repeated = false, IsList = true;
    unsigned i;
 
-   checkName(name, IsList);
-   nameList.name = name; 
+   nameList.name = checkName(IsList);
 
    for ( i = 0; i < toDoList.lists.size(); i++){
 
@@ -192,14 +187,11 @@ void addList(Project &toDoList){
 
 void deleteList(Project &toDoList){
    
-   string name;
    List nameList;
    unsigned i, j;
    bool found = false, IsList = true;
 
-   checkName(name, IsList);
-   nameList.name = name;
-
+   nameList.name = checkName(IsList);
    for (i = 0 ; i < toDoList.lists.size(); i++){
 
       if ( toDoList.lists[i].name == nameList.name){
@@ -220,24 +212,21 @@ bool searchList (Project &toDoList,Task &vecTask, unsigned &k){
    List nameList;
    bool ListFound = false, IsList = true, valid = true;
 
-   if (checkName(name, IsList)) {
+   nameList.name = checkName(IsList);
 
-   	  nameList.name = name;
+   for (i = 0; i < toDoList.lists.size(); i++){
 
-      for (i = 0; i < toDoList.lists.size(); i++)
-      {
-         if (toDoList.lists[i].name == nameList.name){
-            k = i;
-            ListFound = true;
-            cout << T_NAME;
-            getline(cin,vecTask.name);
-         }
+      if (toDoList.lists[i].name == nameList.name){
+         k = i;
+         ListFound = true;
+         cout << T_NAME;
+         getline(cin,vecTask.name);
       }
+   }
    
-      if (!ListFound){
-         error(ERR_LIST_NAME);
-         valid = false;
-      }
+   if (!ListFound){
+      error(ERR_LIST_NAME);
+      valid = false;
    }
 
    return valid;
@@ -264,7 +253,6 @@ void returnDate(string date,int &day,int &month,int &year){
       if (k==3)
          year = stoi(aux);
    }
-
 }
 
 bool checkDate(int day, int month, int year){
@@ -292,7 +280,6 @@ bool checkDate(int day, int month, int year){
    return valid;
 }
 
-
 void addTask(Project &toDoList){
 
    Task vecTask;
@@ -303,18 +290,15 @@ void addTask(Project &toDoList){
 
    if (searchList(toDoList,vecTask,i)){ 
       cout << DEADLINE;
-      
       getline(cin,date);
       returnDate(date,day,month,year);
 
-      // si la fecha es correcta...
-
+      // comprobar si la fecha es correcta...
       if (checkDate(day, month, year)){
 
          vecTask.deadline.day = day;
          vecTask.deadline.month = month;
          vecTask.deadline.year = year;
-
          vecTask.isDone = false;
 
          cout << EXP_TIME;
@@ -324,32 +308,32 @@ void addTask(Project &toDoList){
          	toDoList.lists[i].tasks.push_back(vecTask);
          
          else
-            error(ERR_TIME);
-                      
+            error(ERR_TIME);             
       }
+
       else
          error(ERR_DATE);
-  }   
+   }   
 }
 
 void deleteTask(Project &toDoList){
 
    unsigned j, i;
    int k;
-   bool TaskEncontrado = false;
+   bool TaskFound = false;
    Task vecTask;
 
    if (searchList(toDoList,vecTask,i)){          
       for ( j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
 
          if ( toDoList.lists[i].tasks[j].name == vecTask.name){ 
-            TaskEncontrado = true;
+            TaskFound = true;
             k = j--;
             toDoList.lists[i].tasks.erase(toDoList.lists[i].tasks.begin()+k);
          }
       }
 
-   if (!TaskEncontrado)
+   if (!TaskFound)
       error(ERR_TASK_NAME);
   }
 }
@@ -359,7 +343,7 @@ void toggleTask(Project &toDoList){
    unsigned i,j ;
    Task vecTask;
    List nameList;
-   bool TaskEncontrado = false;
+   bool TaskFound = false;
 
    if (searchList(toDoList, vecTask, i)) {                
 
@@ -367,7 +351,7 @@ void toggleTask(Project &toDoList){
 
          if ( toDoList.lists[i].tasks[j].name == vecTask.name){
                     
-            TaskEncontrado = true;
+            TaskFound = true;
 
             if (toDoList.lists[i].tasks[j].isDone)
                toDoList.lists[i].tasks[j].isDone = false;
@@ -378,7 +362,7 @@ void toggleTask(Project &toDoList){
       }
    }
 
-   if (!TaskEncontrado)
+   if (!TaskFound)
       error(ERR_TASK_NAME);
 }
 
