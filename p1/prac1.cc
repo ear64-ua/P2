@@ -1,6 +1,5 @@
 // Code by:	 Enrique Abma Romero
 // NIE :	 X9853366M
-
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -15,7 +14,6 @@ const string P_DESC = "Enter project description: ";
 const string DEADLINE = "Enter deadline: ";
 const string EXP_TIME = "Enter expected time: ";
 
-const int EMPTY = 0;
 const int MAX_TIME = 180;
 const int MIN_TIME = 1;
 const int MAX_DAY = 31;
@@ -138,6 +136,7 @@ void showMainMenu(){
 string checkName(bool IsList){
 
    string name;
+
    do{
       if (IsList)
          cout << L_NAME;
@@ -146,10 +145,10 @@ string checkName(bool IsList){
 
       getline(cin,name);
 
-      if (name.length() == EMPTY)
+      if (name.length() == 0)
          error(ERR_EMPTY);
 
-   }while(name.length() == EMPTY);
+   }while(name.length() == 0);
 
    return name;
 }
@@ -239,8 +238,7 @@ void returnDate(string date,int &day,int &month,int &year){
 
    stringstream ss(date); 
       
-   // bucle que guarda los caracteres en aux cada vez que se encuentra un '/'
-        
+   // bucle que guarda los caracteres en aux cada vez que se encuentra un '/' 
    while (getline(ss, aux, '/')) { 
       k++;
 
@@ -267,9 +265,7 @@ bool checkDate(int day, int month, int year){
 
    if (year >= MIN_YEAR && year <= MAX_YEAR){
       if (month > 0 && month < 13){
-
          // meses del año con 31/30 o febrero con 28/29 días
-
          if (day >= MIN_DAY && day <= daysPerMonth(month, bisiesto))          
             valid = true;
        }
@@ -346,16 +342,13 @@ void toggleTask(Project &toDoList){
    bool TaskFound = false;
 
    if (searchList(toDoList, vecTask, i)) {                
-
       for ( j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
-
-         if ( toDoList.lists[i].tasks[j].name == vecTask.name){
-                    
+         if ( toDoList.lists[i].tasks[j].name == vecTask.name){     
+            
             TaskFound = true;
 
             if (toDoList.lists[i].tasks[j].isDone)
                toDoList.lists[i].tasks[j].isDone = false;
-
             else
                toDoList.lists[i].tasks[j].isDone = true;
          }
@@ -409,7 +402,6 @@ void printDone(const Project &toDoList, unsigned i, int &countDone, int &timeDon
    for ( unsigned j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
       
       if (toDoList.lists[i].tasks[j].isDone){
-
          cout << "[X] ";
          print(toDoList, i, j);
          cout << " : " << toDoList.lists[i].tasks[j].name << endl;
@@ -442,14 +434,12 @@ void report(const Project &toDoList){
    string highestName;
    // se le añade uno a MAX_DAY al tener que inicializar el día con más prioridad que el 
    // el mayor número que puede ser introducido
-
    cout << "Name: "<< toDoList.name << endl;
   
-   if (toDoList.description.length() != EMPTY)
-    cout << "Description: "<< toDoList.description << endl;
+   if (toDoList.description.length() != 0)
+      cout << "Description: "<< toDoList.description << endl;
   
    for ( i = 0 ; i < toDoList.lists.size(); i++){
-      
       // muestra primero las que no están hechas
       cout << toDoList.lists[i].name << " " << endl;
       printLeft(toDoList, i, countLeft, timeLeft,PriorDay, PriorMonth,  PriorYear, highestName);   
@@ -459,7 +449,7 @@ void report(const Project &toDoList){
    cout << "Total left: " << countLeft << " (" << timeLeft << " minutes)" << endl;
    cout << "Total done: "<< countDone << " (" << timeDone << " minutes)" << endl;
 
-  if (PriorDay != MAX_DAY + 1 ){
+   if (PriorDay != MAX_DAY + 1 ){
      cout << "Highest priority: " << highestName << " (";
      cout << PriorYear << "-" << PriorMonth << "-" << PriorDay << ")" << endl;
   }
