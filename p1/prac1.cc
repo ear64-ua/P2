@@ -368,7 +368,17 @@ void priority(const Project &toDoList,int &PriorDay,int &PriorMonth, int &PriorY
    currentDay = toDoList.lists[i].tasks[j].deadline.day;
 
    // se guarda el valor de la fecha que tenga más prioridad
-   if (PriorYear >= currentYear){
+   
+   if(PriorYear>currentYear){
+      
+      PriorDay = currentDay;
+      PriorMonth = currentMonth;
+      PriorYear = currentYear;
+      highestName = toDoList.lists[i].tasks[j].name;
+
+   }
+
+   if (PriorYear == currentYear){
 
       if (PriorMonth > currentMonth){
          PriorDay = currentDay;
