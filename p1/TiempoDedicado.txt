@@ -34,14 +34,14 @@ ___________________________________________________
 
 Corrección de código
 
-   Indentación de código        ------------  5 min
-   Autocorrector                ------------  5 min
-   Añadir comentarios           ------------  5 min
+   Indentación de código        -----------   5 min
+   Autocorrector                -----------  15 min
+   Añadir comentarios           -----------   5 min
 
 		 Total Corrección de código: 15 min
 
 ___________________________________________________
 
-				Total: 4 hrs 43 min
+			       Total: ~ 5 - 5:30 hrs
 
 ENRIQUE ABMA ROMERO

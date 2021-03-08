@@ -339,9 +339,11 @@ void toggleTask(Project &toDoList){
    unsigned i,j ;
    Task vecTask;
    List nameList;
-   bool TaskFound = false;
+   bool TaskFound = false, ListFound;
+   
+   ListFound=searchList(toDoList, vecTask, i);
 
-   if (searchList(toDoList, vecTask, i)) {                
+   if (ListFound) {                
       for ( j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
          if ( toDoList.lists[i].tasks[j].name == vecTask.name){     
             
@@ -355,7 +357,7 @@ void toggleTask(Project &toDoList){
       }
    }
 
-   if (!TaskFound)
+   if (!TaskFound && ListFound)
       error(ERR_TASK_NAME);
 }
 
