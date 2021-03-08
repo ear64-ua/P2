@@ -614,7 +614,27 @@ void addProject(ToDo &toDoProject){
    }
 }
 
-void deleteProject(ToDo toDoProject){
+void deleteProject(ToDo &toDoProject){
+
+   bool found = false;
+   Project toDoList; 
+   unsigned i,j;
+	
+   cout << P_ID << endl;
+   cin >> toDoList.id;
+
+   for (i = 0; i < toDoProject.projects.size(); i++){
+
+      if (toDoList.id == toDoProject.projects[i].id){
+         j = i--;
+          toDoProject.projects.erase( toDoProject.projects.begin()+j);
+         found = true;         
+      }
+   }
+   
+   if (!found)
+      error(ERR_ID);
+
 
 }
 
