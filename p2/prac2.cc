@@ -144,7 +144,6 @@ void error(Error e){
   }
 }
 
-
 int daysPerMonth(int month, bool bisiesto){
 
    switch(month){
@@ -534,13 +533,32 @@ void report(const Project &toDoList){
   cout << endl;
 }
 
-int projectMenu(){
+void searchProject(ToDo &toDoProject, unsigned &p, Project toDoList){
    
-  Project toDoList;
-  char option;
-  
-  cout << P_ID;
-  cin >> toDoList.id;
+
+   bool found=false;
+   cout << P_ID;
+   cin >> toDoList.id;
+
+   for (unsigned i = 0; i<toDoProject.projects.size(); i++){
+      if (toDoList.id==toDoProject.projects[i].id){
+         toDoList = toDoProject.projects[i];
+         found = true;
+       }
+   }
+   
+   if (!found)
+      error(ERR_ID);
+}
+
+int projectMenu(ToDo &toDoProject){
+   
+   char option;
+   unsigned p;
+   Project toDoList;
+
+   searchProject(toDoProject, p, toDoList);
+
    do{
       showProjectMenu();
       cin >> option;
@@ -570,37 +588,65 @@ int projectMenu(){
 
 }
 
-void addProject(){
+void addProject(ToDo &toDoProject){
+   
+   bool IsList = false, repeated = false;
+   Project toDoList;
+
+   toDoList.name = checkName(IsList);
+
+   for (unsigned i = 0; i < toDoProject.projects.size(); i++){
+
+      if (toDoProject.projects[i].name == toDoList.name)
+         repeated = true;
+   }
+
+   // si está repetido, dará error
+   if (repeated)
+      error(ERR_PROJECT_NAME);
+
+   else{
+      cout << P_DESC;
+      getline(cin,toDoList.description);
+      toDoList.id = toDoProject.nextId;
+      ++toDoProject.nextId;
+      toDoProject.projects.push_back(toDoList);
+   }
+}
+
+void deleteProject(ToDo toDoProject){
 
 }
 
-void deleteProject(){
+void importProject(ToDo toDoProject){
 
 }
 
-void importProject(){
+void exportProject(ToDo toDoProject){
 
 }
 
-void exportProject(){
+void loadData(ToDo toDoProject){
 
 }
 
-void loadData(){
+void saveData(ToDo toDoProject){
 
 }
 
-void saveData(){
-
-}
-
-void summary(){
-
+void summary(const ToDo &toDoProject){
+   
+   for (unsigned i = 0; i < toDoProject.projects.size(); i++){
+      cout << "(" << toDoProject.projects[i].id << ") " << toDoProject.projects[i].name << "[/]" << endl;
+   }
 }
 
 int main(){
-  Project toDoList;
+
+  ToDo toDoProject;
   char option;
+
+  toDoProject.nextId = 1;
   
   do{
     showMainMenu();
@@ -608,21 +654,21 @@ int main(){
     cin.get();
     
     switch(option){
-      case '1': projectMenu();
+      case '1': projectMenu(toDoProject);
                 break;
-      case '2': addProject();
+      case '2': addProject(toDoProject);
                 break;
-      case '3': deleteProject();
+      case '3': deleteProject(toDoProject);
                 break;
-      case '4': importProject();
+      case '4': importProject(toDoProject);
                 break;
-      case '5': exportProject();
+      case '5': exportProject(toDoProject);
                 break;
-      case '6': loadData();
+      case '6': loadData(toDoProject);
                 break;
-      case '7': saveData();
+      case '7': saveData(toDoProject);
                 break;
-      case '8': summary();
+      case '8': summary(toDoProject);
                 break;
       case 'q': break;
       default: error(ERR_OPTION);
