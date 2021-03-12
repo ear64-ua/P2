@@ -482,7 +482,7 @@ void printDone(const Project &toDoList, unsigned i, int &countDone, int &timeDon
          cout << "[X] ";
          print(toDoList, i, j);
          cout << " : " << toDoList.lists[i].tasks[j].name << endl;
-         timeDone = timeDone + toDoList.lists[i].tasks[j].time;
+         timeDone = timeDone + toDoList.lists[i].tasks[j].time;    
          countDone++; 
       }
    }
@@ -533,7 +533,7 @@ void report(const Project &toDoList){
   cout << endl;
 }
 
-void searchProject(ToDo &toDoProject, unsigned &p, Project toDoList){
+bool searchProject(ToDo &toDoProject, unsigned &p, Project &toDoList){
    
 
    bool found=false;
@@ -547,8 +547,20 @@ void searchProject(ToDo &toDoProject, unsigned &p, Project toDoList){
        }
    }
    
-   if (!found)
+   if (!found){
       error(ERR_ID);
+      return false;
+   }
+
+   return true;
+}
+
+void saveProject(Project &toDoList, ToDo &toDoProject){
+
+    for (unsigned i = 0; i < toDoProject.projects.size(); i++){
+       if (toDoProject.projects[i].id == toDoList.id)
+           toDoProject.projects[i] = toDoList;
+     }
 }
 
 int projectMenu(ToDo &toDoProject){
@@ -557,32 +569,34 @@ int projectMenu(ToDo &toDoProject){
    unsigned p;
    Project toDoList;
 
-   searchProject(toDoProject, p, toDoList);
+   if (searchProject(toDoProject, p, toDoList)){
 
-   do{
-      showProjectMenu();
-      cin >> option;
-      cin.get();
+      do{
+         showProjectMenu();
+         cin >> option;
+         cin.get();
     
-      switch(option){
-         case '1': editProject(toDoList);
-                   break;
-         case '2': addList(toDoList);
-                   break;
-         case '3': deleteList(toDoList);
-                   break;
-         case '4': addTask(toDoList);
-                   break;
-         case '5': deleteTask(toDoList);
-                break;
-         case '6': toggleTask(toDoList);
-                   break;
-         case '7': report(toDoList);
-                   break;
-         case 'b': break;
-         default: error(ERR_OPTION);
-      }
-   }while(option!='b');
+         switch(option){
+            case '1': editProject(toDoList);
+                      break;
+            case '2': addList(toDoList);
+                      break;
+            case '3': deleteList(toDoList);
+                      break;
+            case '4': addTask(toDoList);
+                      break;
+            case '5': deleteTask(toDoList);
+                      break;
+            case '6': toggleTask(toDoList);
+                      break;
+            case '7': report(toDoList);
+                      break;
+            case 'b': saveProject(toDoList,toDoProject);
+                      break;
+            default: error(ERR_OPTION);
+         }
+      }while(option!='b');
+    }
   
   return 0;    
 
@@ -631,10 +645,9 @@ void deleteProject(ToDo &toDoProject){
          found = true;         
       }
    }
-   
+
    if (!found)
       error(ERR_ID);
-
 
 }
 
@@ -656,9 +669,28 @@ void saveData(ToDo toDoProject){
 
 void summary(const ToDo &toDoProject){
    
-   for (unsigned i = 0; i < toDoProject.projects.size(); i++){
-      cout << "(" << toDoProject.projects[i].id << ") " << toDoProject.projects[i].name << "[/]" << endl;
-   }
+   Project toDoList;
+   unsigned i,j,k;
+   int taskCounter, taskCountDone;
+   
+   for (j = 0; j < toDoProject.projects.size(); j++){
+   
+      toDoList = toDoProject.projects[j];
+      taskCounter=0;
+      taskCountDone=0;
+
+      for ( i = 0 ; i < toDoList.lists.size(); i++){
+
+         for (k = 0; k < toDoList.lists[i].tasks.size(); k++){
+
+            if (toDoList.lists[i].tasks[k].isDone)
+         	 	taskCountDone++;
+         	taskCounter++;
+          }
+      }
+      
+      cout << "(" << toDoProject.projects[j].id << ") " << toDoProject.projects[j].name << "["<< taskCountDone << "/" << taskCounter << "]" << endl;
+    }
 }
 
 int main(){
