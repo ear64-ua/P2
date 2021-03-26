@@ -644,6 +644,11 @@ void deleteProject(ToDo &toDoProject){
       error(ERR_ID);
 }
 
+void eraseFirstElement(string &s){
+   
+   s.replace(0,1,"");
+}
+
 void assignData(string s, Project &toDoList, ToDo &toDoProject, bool searchProject){
 
    List listName;
@@ -654,17 +659,17 @@ void assignData(string s, Project &toDoList, ToDo &toDoProject, bool searchProje
    // proyecto
 
    if ((p_name != string::npos) && !searchProject){ // si encuentra nombre
-      s.replace(0,1,"");
+	  eraseFirstElement(s);
       toDoList.name = s;
    }
 
    if (p_desc != string::npos){ // si es una descripcion y hay nombre
-      s.replace(0,1,"");
+	  eraseFirstElement(s);
       toDoList.description = s;
    }
 
    if ((p_list != string::npos) ){ // si es un nombre de lista y hay un nombre
-      s.replace(0,1,"");
+	  eraseFirstElement(s);
       listName.name=s;
       toDoList.lists.push_back(listName);
 
@@ -701,17 +706,20 @@ void importProject(ToDo &toDoProject){
 			  if (posf != string::npos){
                    read = false; 
                    searchProject = true;
+                   toDoList.id = toDoProject.nextId;
+                   ++toDoProject.nextId;
                    toDoProject.projects.push_back(toDoList);
                    toDoList.lists.clear();
-					toDoList.description="";
+				   toDoList.description="";
+
                }
 
 			if (read)
 				assignData(s, toDoList, toDoProject, searchProject);
             // termina el proyecto
                          
-			
 		}
+
 		fl.close();
 
    }
@@ -759,6 +767,7 @@ void summary(const ToDo &toDoProject){
       
       cout << "(" << toDoProject.projects[j].id << ") " << toDoProject.projects[j].name << "["<< taskCountDone << "/" << taskCounter << "]" << endl;
     }
+
 }
 
 int main(){
