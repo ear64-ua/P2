@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdlib>
 #include <sstream> 
+#include <fstream>
 
 using namespace std;
 
@@ -489,9 +490,9 @@ void printDone(const Project &toDoList, unsigned i, int &countDone, int &timeDon
 }
 
 void printLeft(const Project &toDoList, unsigned i, int &countLeft, int &timeLeft, int &PriorDay,int &PriorMonth, int &PriorYear, string &highestName){
-   
+
    for ( unsigned j = 0 ; j < toDoList.lists[i].tasks.size(); j++){
-      
+
       if (!toDoList.lists[i].tasks[j].isDone){
          cout << "[ ] ";
          timeLeft = timeLeft + toDoList.lists[i].tasks[j].time;
@@ -512,10 +513,10 @@ void report(const Project &toDoList){
    // se le añade uno a MAX_DAY al tener que inicializar el día con más prioridad que el 
    // el mayor número que puede ser introducido
    cout << "Name: "<< toDoList.name << endl;
-  
+
    if (toDoList.description.length() != 0)
       cout << "Description: "<< toDoList.description << endl;
-  
+
    for ( i = 0 ; i < toDoList.lists.size(); i++){
       // muestra primero las que no están hechas
       cout << toDoList.lists[i].name << " " << endl;
@@ -533,20 +534,21 @@ void report(const Project &toDoList){
   cout << endl;
 }
 
-bool searchProject(ToDo &toDoProject, unsigned &p, Project &toDoList){
-   
-
+bool searchProject(ToDo &toDoProject, Project &toDoList, unsigned &p){
+ 
    bool found=false;
+
    cout << P_ID;
    cin >> toDoList.id;
 
    for (unsigned i = 0; i<toDoProject.projects.size(); i++){
       if (toDoList.id==toDoProject.projects[i].id){
+      	 p = i;
          toDoList = toDoProject.projects[i];
          found = true;
        }
    }
-   
+
    if (!found){
       error(ERR_ID);
       return false;
@@ -564,18 +566,18 @@ void saveProject(Project &toDoList, ToDo &toDoProject){
 }
 
 int projectMenu(ToDo &toDoProject){
-   
-   char option;
-   unsigned p;
-   Project toDoList;
 
-   if (searchProject(toDoProject, p, toDoList)){
+   char option;
+   Project toDoList;
+   unsigned i;
+
+   if (searchProject(toDoProject,toDoList, i)){
 
       do{
          showProjectMenu();
          cin >> option;
          cin.get();
-    
+
          switch(option){
             case '1': editProject(toDoList);
                       break;
@@ -597,13 +599,13 @@ int projectMenu(ToDo &toDoProject){
          }
       }while(option!='b');
     }
-  
+
   return 0;    
 
 }
 
 void addProject(ToDo &toDoProject){
-   
+
    bool IsList = false, repeated = false;
    Project toDoList;
 
@@ -630,29 +632,94 @@ void addProject(ToDo &toDoProject){
 
 void deleteProject(ToDo &toDoProject){
 
-   bool found = false;
    Project toDoList; 
    unsigned i,j;
-	
-   cout << P_ID << endl;
-   cin >> toDoList.id;
 
-   for (i = 0; i < toDoProject.projects.size(); i++){
-
-      if (toDoList.id == toDoProject.projects[i].id){
-         j = i--;
-          toDoProject.projects.erase( toDoProject.projects.begin()+j);
-         found = true;         
-      }
+   if (searchProject(toDoProject,toDoList, i)){
+      j = i--;
+      toDoProject.projects.erase(toDoProject.projects.begin()+j);
    }
 
-   if (!found)
+   else
       error(ERR_ID);
+}
+
+void assignData(string s, Project &toDoList, ToDo &toDoProject, bool searchProject){
+
+   List listName;
+   size_t p_name = s.find("#");
+   size_t p_desc = s.find("*");
+   size_t p_list = s.find("@");
+
+   // proyecto
+
+   if ((p_name != string::npos) && !searchProject){ // si encuentra nombre
+      s.replace(0,1,"");
+      toDoList.name = s;
+   }
+
+   if (p_desc != string::npos){ // si es una descripcion y hay nombre
+      s.replace(0,1,"");
+      toDoList.description = s;
+   }
+
+   if ((p_list != string::npos) ){ // si es un nombre de lista y hay un nombre
+      s.replace(0,1,"");
+      listName.name=s;
+      toDoList.lists.push_back(listName);
+
+	}
 
 }
 
-void importProject(ToDo toDoProject){
+void importProject(ToDo &toDoProject){
+    
+   string filename;
+   string data; 
+   bool read,searchProject;
+   Project toDoList;
 
+   cout << F_NAME;
+   getline(cin,filename);
+
+   ifstream fl(filename); 
+
+    if(fl.is_open()){
+      string s;
+      while(getline(fl,s)){
+
+         size_t posi = s.find("<");
+         size_t posf = s.find(">");
+
+			// encuentra el < y asume que empieza un proyecto
+			if (posi != string::npos){
+				read=true;
+				searchProject = false;
+			}
+			// ejcuta el proyecto
+
+			  if (posf != string::npos){
+                   read = false; 
+                   searchProject = true;
+                   toDoProject.projects.push_back(toDoList);
+                   toDoList.lists.clear();
+					toDoList.description="";
+               }
+
+			if (read)
+				assignData(s, toDoList, toDoProject, searchProject);
+            // termina el proyecto
+                         
+			
+		}
+		fl.close();
+
+   }
+
+   else 
+      error(ERR_FILE);
+   
+   
 }
 
 void exportProject(ToDo toDoProject){
@@ -685,6 +752,7 @@ void summary(const ToDo &toDoProject){
 
             if (toDoList.lists[i].tasks[k].isDone)
          	 	taskCountDone++;
+
          	taskCounter++;
           }
       }
@@ -698,6 +766,7 @@ int main(){
   ToDo toDoProject;
   char option;
 
+  toDoProject.name = "My ToDo list";
   toDoProject.nextId = 1;
   
   do{

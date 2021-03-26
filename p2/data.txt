@@ -1,0 +1,22 @@
+<
+#My first videogame
+*My own project for developing an awesome videogame in C/C++ @Design
+Sprites|12/4/2021|F|30
+Backgrounds|10/6/2021|F|45
+Logo|1/3/2021|T|12
+@Code
+Write code|1/8/2021|F|120
+Unit tests|29/8/2021|F|60
+|2/9/2021|F|50
+Design classes/UML|28/2/2021|T|50
+@Documentation, demo and more
+Write user manual|1/10/2021|F|30
+Prepare demo inputs|15/10/2021|F|45
+Record demo|15/11/2021|F|35
+Publish game (maybe in GitHub)|22/12/2021|F|40
+>
+<
+#Programming 2
+@Assignment 1
+...
+>
