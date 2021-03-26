@@ -1,6 +1,7 @@
 <
 #My first videogame
-*My own project for developing an awesome videogame in C/C++ @Design
+*My own project for developing an awesome videogame in C/C++ 
+@Design
 Sprites|12/4/2021|F|30
 Backgrounds|10/6/2021|F|45
 Logo|1/3/2021|T|12
