@@ -184,7 +184,6 @@ void showMainMenu(){
        << "8- Summary"<< endl
        << "q- Quit" << endl
        << "Option: ";
-
 }
 
 void showProjectMenu(){
@@ -599,9 +598,7 @@ int projectMenu(ToDo &toDoProject){
          }
       }while(option!='b');
     }
-
   return 0;    
-
 }
 
 void addProject(ToDo &toDoProject){
@@ -644,78 +641,138 @@ void deleteProject(ToDo &toDoProject){
       error(ERR_ID);
 }
 
-void eraseFirstElement(string &s){
+void isolateTask(string &s, List &listData){
    
-   s.replace(0,1,"");
+   Task taskData;
+   string name, date, boolean;
+	 int i=0, end=0, count = 0;
+	 int day, month, year, time=0;
+
+	while( end = s.find("|", i), end >= 0 )
+   {
+      if (count == 0)
+         name = s.substr(i, end - i);
+      if (count == 1)
+         date = s.substr(i, end - i);
+      if (count == 2)
+         boolean = s.substr(i, end - i);
+      
+      count++;
+
+      i = end + 1;
+   }
+
+   if (count == 3)
+      time = stoi(s.substr(i));
+
+   returnDate(date,day,month,year);
+   checkDate(day,month,year);
+
+   taskData.deadline.day = day;
+   taskData.deadline.month = month;
+   taskData.deadline.year = year;
+   
+   taskData.name = name;
+   taskData.time = time;
+
+   if (boolean == "F"){
+   	 taskData.isDone = false;
+   }
+
+   else 
+      taskData.isDone = true;
+
+   listData.tasks.push_back(taskData);
+ 
+   
 }
 
-void assignData(string s, Project &toDoList, ToDo &toDoProject, bool searchProject){
+void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bool searchProject, bool &isList){
 
-   List listName;
    size_t p_name = s.find("#");
    size_t p_desc = s.find("*");
    size_t p_list = s.find("@");
+   size_t posi = s.find("<");
+   size_t posf = s.find(">");
 
    // proyecto
 
    if ((p_name != string::npos) && !searchProject){ // si encuentra nombre
-	  eraseFirstElement(s);
+	    s.replace(0,1,"");   // borra el primer elemento
       toDoList.name = s;
    }
 
    if (p_desc != string::npos){ // si es una descripcion y hay nombre
-	  eraseFirstElement(s);
+	    s.replace(0,1,"");
       toDoList.description = s;
    }
 
-   if ((p_list != string::npos) ){ // si es un nombre de lista y hay un nombre
-	  eraseFirstElement(s);
-      listName.name=s;
-      toDoList.lists.push_back(listName);
+   if (isList && p_list == string::npos && (posi == string::npos && posf == string::npos)){ // si no es un nombre de lista, ni < ó >,  es una tarea
+      cout << "1" << endl;
+      isolateTask(s,listData);
+   }
 
-	}
+   if (isList && p_list != string::npos){ // si vuelve a ser una lista o termina el proyecto
+      cout << "2" << endl;
+      toDoList.lists.push_back(listData);
+      listData.tasks.clear();
+      isList = false;
+   }
 
+   if (!isList && p_list != string::npos) { // si es un nombre de lista y hay un nombre
+      cout << "3" << endl; 
+      s.replace(0,1,"");
+      listData.name=s;
+      isList = true;
+   }
+	
 }
 
 void importProject(ToDo &toDoProject){
     
+   List listData;
    string filename;
    string data; 
-   bool read,searchProject;
+   bool read,searchProject, isList=false;
    Project toDoList;
-
    cout << F_NAME;
    getline(cin,filename);
 
    ifstream fl(filename); 
 
-    if(fl.is_open()){
+   if(fl.is_open()){
       string s;
       while(getline(fl,s)){
 
          size_t posi = s.find("<");
          size_t posf = s.find(">");
+         cout << s << endl;
+	   		// encuentra el < y asume que empieza un proyecto
+			   if (posi != string::npos){
+			 	    read=true;
+			 	    searchProject = false;
+			   }
+			   // ejcuta el proyecto
 
-			// encuentra el < y asume que empieza un proyecto
-			if (posi != string::npos){
-				read=true;
-				searchProject = false;
-			}
-			// ejcuta el proyecto
-
-			  if (posf != string::npos){
-                   read = false; 
-                   searchProject = true;
-                   toDoList.id = toDoProject.nextId;
-                   ++toDoProject.nextId;
-                   toDoProject.projects.push_back(toDoList);
-                   toDoList.lists.clear();
-				   toDoList.description="";
-
-               }
+			   if (posf != string::npos){
+            
+            toDoList.lists.push_back(listData); // empuja la última lista con tareas
+            listData.tasks.clear();
+            listData.name.erase();
+             
+            read = false; 
+            searchProject = true;
+            // asignar su id al proyecto
+            toDoList.id = toDoProject.nextId;
+            ++toDoProject.nextId;
+           // borra el contenido de la estructura para seguir trabajando con él 
+            toDoProject.projects.push_back(toDoList);
+            toDoList.lists.clear();
+            toDoList.description="";
+          }
 
 			if (read)
-				assignData(s, toDoList, toDoProject, searchProject);
+				assignData(s, toDoList, toDoProject, listData, searchProject, isList);
             // termina el proyecto
                          
 		}
