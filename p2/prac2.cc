@@ -533,7 +533,7 @@ void report(const Project &toDoList){
   cout << endl;
 }
 
-bool searchProject(ToDo &toDoProject, Project &toDoList, unsigned &p){
+bool searchProject(ToDo &toDoProject, Project &toDoList, unsigned &position){
  
    bool found=false;
 
@@ -542,7 +542,7 @@ bool searchProject(ToDo &toDoProject, Project &toDoList, unsigned &p){
 
    for (unsigned i = 0; i<toDoProject.projects.size(); i++){
       if (toDoList.id==toDoProject.projects[i].id){
-      	 p = i;
+      	 position = i;
          toDoList = toDoProject.projects[i];
          found = true;
        }
@@ -682,18 +682,15 @@ void isolateTask(string &s, List &listData){
    else 
       taskData.isDone = true;
 
-   listData.tasks.push_back(taskData);
- 
-   
+   listData.tasks.push_back(taskData);  
 }
 
-void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bool searchProject, bool &isList){
+void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bool searchProject, bool &isList, char chain[]){
 
    size_t p_name = s.find("#");
    size_t p_desc = s.find("*");
    size_t p_list = s.find("@");
-   size_t posi = s.find("<");
-   size_t posf = s.find(">");
+
 
    // proyecto
 
@@ -707,7 +704,7 @@ void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bo
       toDoList.description = s;
    }
 
-   if (isList && p_list == string::npos && (posi == string::npos && posf == string::npos)){ // si no es un nombre de lista, ni < ó >,  es una tarea
+   if (isList && p_list == string::npos && (chain[0]!= '<' && chain[0]!= '>')){ // si no es un nombre de lista, ni < ó >,  es una tarea
       isolateTask(s,listData);
    }
 
@@ -724,7 +721,6 @@ void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bo
       listData.name=s;
       isList = true;
    }
-	
 }
 
 void importProject(ToDo &toDoProject){
@@ -750,13 +746,14 @@ void importProject(ToDo &toDoProject){
          char chain[size];
          strcpy(chain,s.c_str());
 	   		// encuentra el < y asume que empieza un proyecto
-			   if (chain[0]== '<'){
-			 	    read=true;
-			 	    searchProject = false;
-			   }
-			   // ejcuta el proyecto
+         if (chain[0]== '<'){
+            read=true;
+            searchProject = false;
+         }
+         
+         // ejcuta el proyecto
 
-			   if (chain[0]== '>'){
+         if (chain[0]== '>'){
             
             toDoList.lists.push_back(listData); // empuja la última lista con tareas
             listData.tasks.clear();
@@ -775,22 +772,49 @@ void importProject(ToDo &toDoProject){
           }
 
 			if (read)
-				assignData(s, toDoList, toDoProject, listData, searchProject, isList);
+				assignData(s, toDoList, toDoProject, listData, searchProject, isList, chain);
             // termina el proyecto
                          
 		}
 
 		fl.close();
-
    }
 
    else 
       error(ERR_FILE);
-   
-   
 }
 
-void exportProject(ToDo toDoProject){
+void exportProject(ToDo &toDoProject){
+
+   string answer;
+   string filename;
+   unsigned p;
+   Project toDoList;
+
+   do {
+      cout << P_SAVE;
+
+      getline(cin, answer);
+  
+   }while(answer != "y" && answer != "n" && answer != "y" && answer != "N" );
+
+   if ( answer == "y" ||  answer == "Y"){
+
+
+   }
+
+   else if ( answer == "n" ||  answer == "N"){
+
+      if(searchProject( toDoProject,  toDoList,  p)){
+
+         cout << F_NAME;
+         cin.get();
+         getline(cin, filename);
+
+      }
+   }
+
+  
 
 }
 
