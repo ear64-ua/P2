@@ -708,19 +708,18 @@ void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bo
    }
 
    if (isList && p_list == string::npos && (posi == string::npos && posf == string::npos)){ // si no es un nombre de lista, ni < ó >,  es una tarea
-      cout << "1" << endl;
       isolateTask(s,listData);
    }
 
    if (isList && p_list != string::npos){ // si vuelve a ser una lista o termina el proyecto
-      cout << "2" << endl;
+
       toDoList.lists.push_back(listData);
       listData.tasks.clear();
       isList = false;
    }
 
    if (!isList && p_list != string::npos) { // si es un nombre de lista y hay un nombre
-      cout << "3" << endl; 
+
       s.replace(0,1,"");
       listData.name=s;
       isList = true;
@@ -735,6 +734,9 @@ void importProject(ToDo &toDoProject){
    string data; 
    bool read,searchProject, isList=false;
    Project toDoList;
+   int size;
+
+
    cout << F_NAME;
    getline(cin,filename);
 
@@ -743,18 +745,18 @@ void importProject(ToDo &toDoProject){
    if(fl.is_open()){
       string s;
       while(getline(fl,s)){
-
-         size_t posi = s.find("<");
-         size_t posf = s.find(">");
-         cout << s << endl;
+         
+         size = s.length();
+         char chain[size];
+         strcpy(chain,s.c_str());
 	   		// encuentra el < y asume que empieza un proyecto
-			   if (posi != string::npos){
+			   if (chain[0]== '<'){
 			 	    read=true;
 			 	    searchProject = false;
 			   }
 			   // ejcuta el proyecto
 
-			   if (posf != string::npos){
+			   if (chain[0]== '>'){
             
             toDoList.lists.push_back(listData); // empuja la última lista con tareas
             listData.tasks.clear();
@@ -765,6 +767,7 @@ void importProject(ToDo &toDoProject){
             // asignar su id al proyecto
             toDoList.id = toDoProject.nextId;
             ++toDoProject.nextId;
+            isList = false;
            // borra el contenido de la estructura para seguir trabajando con él 
             toDoProject.projects.push_back(toDoList);
             toDoList.lists.clear();
