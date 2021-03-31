@@ -642,13 +642,13 @@ void deleteProject(ToDo &toDoProject){
 }
 
 void isolateTask(string &s, List &listData){
-   
+
    Task taskData;
    string name, date, boolean;
-	 int i=0, end=0, count = 0;
-	 int day, month, year, time=0;
+   int i=0, end=0, count = 0;
+   int day, month, year, time=0;
 
-	while( end = s.find("|", i), end >= 0 )
+   while( end = s.find("|", i), end >= 0 )
    {
       if (count == 0)
          name = s.substr(i, end - i);
@@ -658,7 +658,6 @@ void isolateTask(string &s, List &listData){
          boolean = s.substr(i, end - i);
       
       count++;
-
       i = end + 1;
    }
 
@@ -666,56 +665,50 @@ void isolateTask(string &s, List &listData){
       time = stoi(s.substr(i));
 
    returnDate(date,day,month,year);
-   checkDate(day,month,year);
+   if(checkDate(day,month,year)){
 
-   taskData.deadline.day = day;
-   taskData.deadline.month = month;
-   taskData.deadline.year = year;
+      taskData.deadline.day = day;
+      taskData.deadline.month = month;
+      taskData.deadline.year = year;
    
-   taskData.name = name;
-   taskData.time = time;
+      taskData.name = name;
+      taskData.time = time;
 
-   if (boolean == "F"){
-   	 taskData.isDone = false;
-   }
+      if (boolean == "F"){
+   	    taskData.isDone = false;
+      }
 
-   else 
-      taskData.isDone = true;
+      else 
+         taskData.isDone = true;
 
-   listData.tasks.push_back(taskData);  
+      listData.tasks.push_back(taskData);
+   }  
 }
 
 void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bool searchProject, bool &isList, char chain[]){
 
-   size_t p_name = s.find("#");
-   size_t p_desc = s.find("*");
-   size_t p_list = s.find("@");
-
-
-   // proyecto
-
-   if ((p_name != string::npos) && !searchProject){ // si encuentra nombre
-	    s.replace(0,1,"");   // borra el primer elemento
+   if ((chain[0]== '#') && !searchProject){ // si encuentra nombre
+      s.replace(0,1,"");   // borra el primer elemento
       toDoList.name = s;
    }
 
-   if (p_desc != string::npos){ // si es una descripcion y hay nombre
-	    s.replace(0,1,"");
+   if (chain[0]== '*'){ // si es una descripcion y hay nombre
+      s.replace(0,1,"");
       toDoList.description = s;
    }
 
-   if (isList && p_list == string::npos && (chain[0]!= '<' && chain[0]!= '>')){ // si no es un nombre de lista, ni < ó >,  es una tarea
+   if (isList && chain[0] != '@' && (chain[0]!= '<' && chain[0]!= '>')){ // si no es un nombre de lista, ni < ó >,  es una tarea
       isolateTask(s,listData);
    }
 
-   if (isList && p_list != string::npos){ // si vuelve a ser una lista o termina el proyecto
+   if (isList && chain[0]== '@'){ // si vuelve a ser una lista o termina el proyecto
 
       toDoList.lists.push_back(listData);
       listData.tasks.clear();
       isList = false;
    }
 
-   if (!isList && p_list != string::npos) { // si es un nombre de lista y hay un nombre
+   if (!isList && chain[0]== '@') { // si es un nombre de lista y hay un nombre
 
       s.replace(0,1,"");
       listData.name=s;
@@ -726,10 +719,9 @@ void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bo
 void importProject(ToDo &toDoProject){
     
    List listData;
-   string filename;
-   string data; 
-   bool read,searchProject, isList=false;
    Project toDoList;
+   string filename, data;
+   bool read,searchProject, isList=false;
    int size;
 
 
@@ -784,6 +776,38 @@ void importProject(ToDo &toDoProject){
       error(ERR_FILE);
 }
 
+void readProject(ToDo &toDoProject, unsigned p, ofstream &fe){
+
+   unsigned j, i;
+
+   fe << "<" << endl;
+   fe << "#" << toDoProject.projects[p].name << endl;
+   if (toDoProject.projects[p].description.length() != 0)
+      fe << "*" << toDoProject.projects[p].description << endl;
+
+   for ( i = 0; i < toDoProject.projects[p].lists.size(); i++){
+         
+      if (toDoProject.projects[p].lists[i].name.length() != 0)
+         fe << "@" << toDoProject.projects[p].lists[i].name << endl;
+
+      for ( j = 0; j < toDoProject.projects[p].lists[i].tasks.size(); j++){
+
+         fe << toDoProject.projects[p].lists[i].tasks[j].name << "|" << toDoProject.projects[p].lists[i].tasks[j].deadline.day;
+         fe << "/" << toDoProject.projects[p].lists[i].tasks[j].deadline.month << "/" ;
+         fe << toDoProject.projects[p].lists[i].tasks[j].deadline.year << "|";
+
+         if (toDoProject.projects[p].lists[i].tasks[j].isDone == true)
+            fe << "T";
+         else 
+            fe << "F";
+
+         fe << "|" << toDoProject.projects[p].lists[i].tasks[j].time << endl;
+         }
+      }
+      
+      fe << ">" << endl;
+}
+
 void exportProject(ToDo &toDoProject){
 
    string answer;
@@ -799,7 +823,21 @@ void exportProject(ToDo &toDoProject){
    }while(answer != "y" && answer != "n" && answer != "y" && answer != "N" );
 
    if ( answer == "y" ||  answer == "Y"){
+      
+      cout << F_NAME;
+      getline(cin, filename);
+         
+      ofstream fe(filename);
 
+      if (fe.is_open()){
+         for (unsigned i = 0; i < toDoProject.projects.size(); i++)
+            readProject(toDoProject, i, fe);
+         
+         fe.close();
+        }
+
+      else 
+         error(ERR_FILE);
 
    }
 
@@ -810,12 +848,17 @@ void exportProject(ToDo &toDoProject){
          cout << F_NAME;
          cin.get();
          getline(cin, filename);
+         
+         ofstream fe(filename);
 
+         if (fe.is_open()){
+            readProject(toDoProject, p, fe);
+            fe.close();
+         }
+         else 
+            error(ERR_FILE);
       }
    }
-
-  
-
 }
 
 void loadData(ToDo toDoProject){
