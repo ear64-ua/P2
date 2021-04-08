@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <sstream> 
 #include <fstream>
+#include <stdio.h>
+#include <cstring>
 
 using namespace std;
 
@@ -144,7 +146,7 @@ void error(Error e){
       cout << "ERROR: wrong arguments" << endl;
   }
 }
-
+ 
 int daysPerMonth(int month, bool bisiesto){
 
    switch(month){
@@ -174,7 +176,7 @@ int daysPerMonth(int month, bool bisiesto){
 }
 
 void showMainMenu(){
- cout << "1- Proyect menu" << endl
+ cout << "1- Project menu" << endl
        << "2- Add project" << endl
        << "3- Delete project" << endl 
        << "4- Import projects" << endl
@@ -529,8 +531,7 @@ void report(const Project &toDoList){
    if (PriorDay != MAX_DAY + 1 ){
      cout << "Highest priority: " << highestName << " (";
      cout << PriorYear << "-" << PriorMonth << "-" << PriorDay << ")" << endl;
-  }
-  cout << endl;
+   }
 }
 
 bool searchProject(ToDo &toDoProject, Project &toDoList, unsigned &position){
@@ -636,9 +637,6 @@ void deleteProject(ToDo &toDoProject){
       j = i--;
       toDoProject.projects.erase(toDoProject.projects.begin()+j);
    }
-
-   else
-      error(ERR_ID);
 }
 
 void isolateTask(string &s, List &listData){
@@ -665,12 +663,12 @@ void isolateTask(string &s, List &listData){
       time = stoi(s.substr(i));
 
    returnDate(date,day,month,year);
-   if(checkDate(day,month,year)){
+   if(checkDate(day,month,year) && time >= MIN_TIME && time <= MAX_TIME){
 
       taskData.deadline.day = day;
       taskData.deadline.month = month;
       taskData.deadline.year = year;
-   
+
       taskData.name = name;
       taskData.time = time;
 
@@ -765,8 +763,7 @@ void importProject(ToDo &toDoProject){
 
 			if (read)
 				assignData(s, toDoList, toDoProject, listData, searchProject, isList, chain);
-            // termina el proyecto
-                         
+            // termina el proyecto               
 		}
 
 		fl.close();
@@ -776,7 +773,7 @@ void importProject(ToDo &toDoProject){
       error(ERR_FILE);
 }
 
-void readProject(ToDo &toDoProject, unsigned p, ofstream &fe){
+void readProject(const ToDo &toDoProject, unsigned p, ofstream &fe){
 
    unsigned j, i;
 
@@ -808,6 +805,28 @@ void readProject(ToDo &toDoProject, unsigned p, ofstream &fe){
       fe << ">" << endl;
 }
 
+bool confirm(bool isBin){
+
+   string answer;
+
+   do {
+
+      if (isBin)
+         cout << YES_NO;
+      else 
+         cout << P_SAVE;
+
+      getline(cin, answer);
+  
+   }while(answer != "y" && answer != "n" && answer != "Y" && answer != "N" );
+
+   if ( answer == "y" ||  answer == "Y")
+      return true;
+   
+   else 
+      return false;
+}
+
 void exportProject(ToDo &toDoProject){
 
    string answer;
@@ -815,14 +834,10 @@ void exportProject(ToDo &toDoProject){
    unsigned p;
    Project toDoList;
 
-   do {
-      cout << P_SAVE;
+   bool isBin = false;
 
-      getline(cin, answer);
-  
-   }while(answer != "y" && answer != "n" && answer != "y" && answer != "N" );
 
-   if ( answer == "y" ||  answer == "Y"){
+   if (confirm(isBin)){
       
       cout << F_NAME;
       getline(cin, filename);
@@ -841,7 +856,7 @@ void exportProject(ToDo &toDoProject){
 
    }
 
-   else if ( answer == "n" ||  answer == "N"){
+   else{
 
       if(searchProject( toDoProject,  toDoList,  p)){
 
@@ -861,11 +876,106 @@ void exportProject(ToDo &toDoProject){
    }
 }
 
-void loadData(ToDo toDoProject){
+void loadData(ToDo &toDoProject){/*
+    
+   BinToDo binaryToDo; 
+   string filename, answer;
+
+   bool isBin = true;
+
+    
+   cout << F_NAME;
+   getline(cin, filename);
+   
+   ifstream file(filename, ios::in | ios::binary );
+
+   if (file.is_open()){
+      if (confirm(isBin))
+      {
+
+         toDoProject.nextId = 1;
+         toDoProject.projects.clear();
+         file.read((char * ) &binaryToDo, sizeof(BinToDo));
+         	
+         	cout << binaryToDo.name << endl;
+
+      }
+
+      file.close(); 
+
+
+   }
+      
+ */
 
 }
 
-void saveData(ToDo toDoProject){
+void saveData(ToDo &toDoProject){
+
+   string filename;
+   BinToDo binaryToDo;
+   BinProject binaryProject;
+   BinList binaryList;
+   BinTask binaryTask;
+
+   cout << F_NAME;
+   getline(cin, filename);
+
+
+   ofstream file(filename, ios::out | ios::binary );
+
+   if (file.is_open()){
+
+      strncpy (binaryToDo.name,toDoProject.name.c_str(),KMAXNAME);
+      binaryToDo.name[KMAXNAME-1]='\0';
+      binaryToDo.numProjects = toDoProject.projects.size();
+      file.write((const char *)&binaryToDo, sizeof(BinToDo));  // para que se esctiba la estructura ToDo
+
+      for (unsigned i = 0; i < toDoProject.projects.size(); i++){
+         
+         strncpy (binaryProject.name, toDoProject.projects[i].name.c_str(), KMAXNAME);
+         binaryProject.name[KMAXNAME-1]='\0';
+
+         if (toDoProject.projects[i].name.length()!=0){
+            strncpy (binaryProject.description, toDoProject.projects[i].description.c_str(), KMAXDESC);            
+            binaryProject.description[KMAXDESC-1]='\0';
+         }
+
+         else 
+         	strcpy(binaryProject.description,"");
+
+         binaryProject.numLists = toDoProject.projects[i].lists.size();
+         file.write((const char *)&binaryProject, sizeof(BinProject));   // para que se escriba la estructura Project
+
+         for (unsigned j = 0; j < toDoProject.projects[i].lists.size(); j++){
+            
+            strncpy (binaryList.name, toDoProject.projects[i].lists[j].name.c_str(), KMAXNAME);
+            binaryList.name[KMAXNAME-1]='\0';
+            binaryList.numTasks = toDoProject.projects[j].lists[i].tasks.size();
+            file.write((const char *)&binaryList, sizeof(BinList));   // para que se escriba la estructura List
+
+            for (unsigned k = 0; k < toDoProject.projects[i].lists[j].tasks.size(); k++){
+
+               strncpy (binaryTask.name, toDoProject.projects[i].lists[j].tasks[k].name.c_str(), KMAXNAME);
+               binaryTask.name[KMAXNAME-1]='\0';
+
+               binaryTask.deadline.day = toDoProject.projects[i].lists[j].tasks[k].deadline.day;
+               binaryTask.deadline.month = toDoProject.projects[i].lists[j].tasks[k].deadline.month;
+               binaryTask.deadline.year = toDoProject.projects[i].lists[j].tasks[k].deadline.year;
+
+               binaryTask.isDone = toDoProject.projects[i].lists[j].tasks[k].isDone;
+
+               binaryTask.time = toDoProject.projects[i].lists[j].tasks[k].time;
+               file.write((const char *)&binaryTask, sizeof(BinTask));   // para que se escriba la estructura Task
+            }
+         }
+      }
+
+      file.close();
+   }
+
+   else 
+      error(ERR_FILE);
 
 }
 
@@ -894,7 +1004,6 @@ void summary(const ToDo &toDoProject){
       
       cout << "(" << toDoProject.projects[j].id << ") " << toDoProject.projects[j].name << "["<< taskCountDone << "/" << taskCounter << "]" << endl;
     }
-
 }
 
 int main(){
