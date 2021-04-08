@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <sstream> 
 #include <fstream>
-#include <stdio.h>
 #include <cstring>
 
 using namespace std;
@@ -876,10 +875,16 @@ void exportProject(ToDo &toDoProject){
    }
 }
 
-void loadData(ToDo &toDoProject){/*
+void loadData(ToDo &toDoProject){
     
    BinToDo binaryToDo; 
+   BinProject binaryProject;
+   BinList binaryList;
+   BinTask binaryTask;
    string filename, answer;
+   Project pushProj;
+   List pushList;
+   Task pushTask;
 
    bool isBin = true;
 
@@ -896,8 +901,46 @@ void loadData(ToDo &toDoProject){/*
          toDoProject.nextId = 1;
          toDoProject.projects.clear();
          file.read((char * ) &binaryToDo, sizeof(BinToDo));
+
+         toDoProject.name = binaryToDo.name;
          	
-         	cout << binaryToDo.name << endl;
+         for (unsigned i = 0; i < binaryToDo.numProjects ; i++ ){
+
+            file.read((char * ) &binaryProject, sizeof(BinProject));
+
+            pushProj.name = binaryProject.name;
+            pushProj.description = binaryProject.description;
+            pushProj.id = toDoProject.nextId;
+            toDoProject.nextId++;
+
+            toDoProject.projects.push_back(pushProj);
+
+            for (unsigned j = 0; j < binaryProject.numLists ; j++ ){
+
+               file.read((char * ) &binaryList, sizeof(BinList));
+
+               pushList.name = binaryList.name;
+
+               toDoProject.projects[i].lists.push_back(pushList);
+
+               for (unsigned k = 0; k < binaryList.numTasks ; k++ ){
+
+                  file.read((char * ) &binaryTask, sizeof(BinTask));
+
+                  pushTask.name = binaryTask.name;
+                  pushTask.deadline.day = binaryTask.deadline.day;
+                  pushTask.deadline.month = binaryTask.deadline.month;
+                  pushTask.deadline.year = binaryTask.deadline.year;
+                  pushTask.isDone = binaryTask.isDone;
+                  pushTask.time = binaryTask.time;
+
+                  toDoProject.projects[i].lists[j].tasks.push_back(pushTask);
+
+
+
+               }
+            }
+         }
 
       }
 
@@ -906,7 +949,6 @@ void loadData(ToDo &toDoProject){/*
 
    }
       
- */
 
 }
 
@@ -951,7 +993,7 @@ void saveData(ToDo &toDoProject){
             
             strncpy (binaryList.name, toDoProject.projects[i].lists[j].name.c_str(), KMAXNAME);
             binaryList.name[KMAXNAME-1]='\0';
-            binaryList.numTasks = toDoProject.projects[j].lists[i].tasks.size();
+            binaryList.numTasks = toDoProject.projects[i].lists[j].tasks.size();
             file.write((const char *)&binaryList, sizeof(BinList));   // para que se escriba la estructura List
 
             for (unsigned k = 0; k < toDoProject.projects[i].lists[j].tasks.size(); k++){
