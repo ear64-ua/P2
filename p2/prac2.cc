@@ -644,6 +644,7 @@ void isolateTask(string &s, List &listData){
    string name, date, boolean;
    int i=0, end=0, count = 0;
    int day, month, year, time=0;
+   
 
    while( end = s.find("|", i), end >= 0 )
    {
@@ -662,7 +663,7 @@ void isolateTask(string &s, List &listData){
       time = stoi(s.substr(i));
 
    returnDate(date,day,month,year);
-   if(checkDate(day,month,year) && time >= MIN_TIME && time <= MAX_TIME){
+   if(checkDate(day,month,year)){
 
       taskData.deadline.day = day;
       taskData.deadline.month = month;
@@ -671,21 +672,40 @@ void isolateTask(string &s, List &listData){
       taskData.name = name;
       taskData.time = time;
 
-      if (boolean == "F"){
-   	    taskData.isDone = false;
-      }
+      if (boolean == "F")
+   	   taskData.isDone = false;
 
       else 
          taskData.isDone = true;
 
-      listData.tasks.push_back(taskData);
+      if (time >= MIN_TIME && time <= MAX_TIME)
+         listData.tasks.push_back(taskData);
+
+      else
+         error(ERR_TIME);
+      
    }  
+
+   //else
+      //error(ERR_DATE);
+
+}
+
+bool checkProjectName(ToDo &toDoProject , string name){
+   for (unsigned i = 0; i < toDoProject.projects.size(); i++){
+      if (toDoProject.projects[i].name == name)
+         return false;
+   }
+
+   return true;
 }
 
 void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bool searchProject, bool &isList, char chain[]){
 
    if ((chain[0]== '#') && !searchProject){ // si encuentra nombre
       s.replace(0,1,"");   // borra el primer elemento
+      ++toDoProject.nextId;
+      toDoList.id = toDoProject.nextId;
       toDoList.name = s;
    }
 
@@ -699,7 +719,6 @@ void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bo
    }
 
    if (isList && chain[0]== '@'){ // si vuelve a ser una lista o termina el proyecto
-
       toDoList.lists.push_back(listData);
       listData.tasks.clear();
       isList = false;
@@ -713,17 +732,24 @@ void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bo
    }
 }
 
-void importProject(ToDo &toDoProject){
+void askFileName(string &filename){
+
+   cout << F_NAME;
+   getline(cin, filename);
+
+}
+
+void importProject(ToDo &toDoProject, string filename, bool askForFileName){
     
    List listData;
    Project toDoList;
-   string filename, data;
+   string data;
    bool read,searchProject, isList=false;
    int size;
 
 
-   cout << F_NAME;
-   getline(cin,filename);
+   if (askForFileName) 
+      askFileName(filename);
 
    ifstream fl(filename); 
 
@@ -749,15 +775,16 @@ void importProject(ToDo &toDoProject){
             listData.name.erase();
              
             read = false; 
-            searchProject = true;
-            // asignar su id al proyecto
-            toDoList.id = toDoProject.nextId;
-            ++toDoProject.nextId;
+            searchProject = true;         
             isList = false;
            // borra el contenido de la estructura para seguir trabajando con él 
-            toDoProject.projects.push_back(toDoList);
+            if (checkProjectName(toDoProject , toDoList.name))
+               toDoProject.projects.push_back(toDoList);
+            else 
+               error(ERR_PROJECT_NAME);
             toDoList.lists.clear();
             toDoList.description="";
+            
           }
 
 			if (read)
@@ -812,10 +839,11 @@ bool confirm(bool isBin){
 
       if (isBin)
          cout << YES_NO;
-      else 
+      else if (!isBin)
          cout << P_SAVE;
-
+      
       getline(cin, answer);
+
   
    }while(answer != "y" && answer != "n" && answer != "Y" && answer != "N" );
 
@@ -832,14 +860,12 @@ void exportProject(ToDo &toDoProject){
    string filename;
    unsigned p;
    Project toDoList;
-
    bool isBin = false;
 
 
    if (confirm(isBin)){
       
-      cout << F_NAME;
-      getline(cin, filename);
+      askFileName(filename);
          
       ofstream fe(filename);
 
@@ -875,29 +901,28 @@ void exportProject(ToDo &toDoProject){
    }
 }
 
-void loadData(ToDo &toDoProject){
+void loadData(ToDo &toDoProject, string filename, bool askForFileName){
     
    BinToDo binaryToDo; 
    BinProject binaryProject;
    BinList binaryList;
    BinTask binaryTask;
-   string filename, answer;
+   string answer;
    Project pushProj;
    List pushList;
    Task pushTask;
 
    bool isBin = true;
 
-    
-   cout << F_NAME;
-   getline(cin, filename);
+   if (askForFileName)
+      askFileName(filename);
    
-   ifstream file(filename, ios::in | ios::binary );
+   ifstream file(filename, ios::in | ios::binary);
 
    if (file.is_open()){
-      if (confirm(isBin))
+      if (!askForFileName || confirm(isBin))
       {
-
+         askForFileName = true;
          toDoProject.nextId = 1;
          toDoProject.projects.clear();
          file.read((char * ) &binaryToDo, sizeof(BinToDo));
@@ -935,21 +960,12 @@ void loadData(ToDo &toDoProject){
                   pushTask.time = binaryTask.time;
 
                   toDoProject.projects[i].lists[j].tasks.push_back(pushTask);
-
-
-
                }
             }
          }
-
       }
-
       file.close(); 
-
-
    }
-      
-
 }
 
 void saveData(ToDo &toDoProject){
@@ -959,9 +975,9 @@ void saveData(ToDo &toDoProject){
    BinProject binaryProject;
    BinList binaryList;
    BinTask binaryTask;
-
-   cout << F_NAME;
-   getline(cin, filename);
+   
+   
+   askFileName(filename);
 
 
    ofstream file(filename, ios::out | ios::binary );
@@ -1048,14 +1064,16 @@ void summary(const ToDo &toDoProject){
     }
 }
 
-int main(){
 
-  ToDo toDoProject;
-  char option;
+void toDoMenu(ToDo &toDoProject,bool askForFileName)
+{
 
-  toDoProject.name = "My ToDo list";
-  toDoProject.nextId = 1;
-  
+   char option;
+   string filename;  
+
+   toDoProject.nextId = 1;
+   toDoProject.name = "My ToDo list";
+
   do{
     showMainMenu();
     cin >> option;
@@ -1068,11 +1086,11 @@ int main(){
                 break;
       case '3': deleteProject(toDoProject);
                 break;
-      case '4': importProject(toDoProject);
+      case '4': importProject(toDoProject, filename, askForFileName);
                 break;
       case '5': exportProject(toDoProject);
                 break;
-      case '6': loadData(toDoProject);
+      case '6': loadData(toDoProject, filename, askForFileName);
                 break;
       case '7': saveData(toDoProject);
                 break;
@@ -1083,5 +1101,57 @@ int main(){
     }
   }while(option!='q');
   
-  return 0;    
+
 }
+
+int main(int argc, char *argv[]){
+
+   ToDo toDoProject;
+   bool askForFileName = true, errorArg = false;
+
+   if (argc > 1)
+      askForFileName = false;
+
+   if (argc == 5){
+      if(string(argv[1]) == "-i" && string(argv[3]) == "-l"){
+         loadData(toDoProject, string(argv[4]), askForFileName);
+         importProject(toDoProject, string(argv[2]), askForFileName);
+      }
+      else if (string(argv[1]) == "-l" && string(argv[3]) == "-i"){
+         loadData(toDoProject, string(argv[2]), askForFileName);
+         importProject(toDoProject, string(argv[4]), askForFileName);
+
+      }
+      
+      else 
+         errorArg = true;
+      
+   }
+   
+   else if (argc==3){
+      
+      if (string(argv[1])=="-l")
+         loadData(toDoProject, string(argv[2]), askForFileName);
+      
+   
+      else if (string(argv[1])=="-i")
+         importProject(toDoProject, string(argv[2]), askForFileName);
+      
+      
+      else
+         errorArg = true;
+   }
+   
+   if (!errorArg){
+      askForFileName = true;
+      toDoMenu(toDoProject, askForFileName);
+
+   }
+
+   else 
+      error(ERR_ARGS);
+
+   return 0;
+
+}
+
