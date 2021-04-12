@@ -704,8 +704,10 @@ void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bo
 
    if ((chain[0]== '#') && !searchProject){ // si encuentra nombre
       s.replace(0,1,"");   // borra el primer elemento
-      ++toDoProject.nextId;
-      toDoList.id = toDoProject.nextId;
+      if(checkProjectName(toDoProject , s)){
+         toDoList.id = toDoProject.nextId;
+         ++toDoProject.nextId;
+      }
       toDoList.name = s;
    }
 
