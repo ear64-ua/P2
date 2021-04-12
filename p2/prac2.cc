@@ -638,13 +638,9 @@ void deleteProject(ToDo &toDoProject){
    }
 }
 
-void isolateTask(string &s, List &listData){
-
-   Task taskData;
-   string name, date, boolean;
-   int i=0, end=0, count = 0;
-   int day, month, year, time=0;
+void separateTaskData(string &s,string &name, string &date, string &boolean, int &time){
    
+   int i=0, end=0, count = 0;
 
    while( end = s.find("|", i), end >= 0 )
    {
@@ -662,7 +658,17 @@ void isolateTask(string &s, List &listData){
    if (count == 3)
       time = stoi(s.substr(i));
 
+}
+
+void isolateTask(string &s, List &listData){
+
+   Task taskData;
+   string name, date, boolean;
+   int day, month, year, time=0;
+
+   separateTaskData(s,name,date,boolean,time);
    returnDate(date,day,month,year);
+
    if(checkDate(day,month,year)){
 
       taskData.deadline.day = day;
@@ -683,12 +689,10 @@ void isolateTask(string &s, List &listData){
 
       else
          error(ERR_TIME);
-      
    }  
 
-   //else
-      //error(ERR_DATE);
-
+   else
+      error(ERR_DATE);
 }
 
 bool checkProjectName(ToDo &toDoProject , string name){
@@ -704,10 +708,6 @@ void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bo
 
    if ((chain[0]== '#') && !searchProject){ // si encuentra nombre
       s.replace(0,1,"");   // borra el primer elemento
-      if(checkProjectName(toDoProject , s)){
-         toDoList.id = toDoProject.nextId;
-         ++toDoProject.nextId;
-      }
       toDoList.name = s;
    }
 
@@ -780,8 +780,11 @@ void importProject(ToDo &toDoProject, string filename, bool askForFileName){
             searchProject = true;         
             isList = false;
            // borra el contenido de la estructura para seguir trabajando con él 
-            if (checkProjectName(toDoProject , toDoList.name))
+            if (checkProjectName(toDoProject , toDoList.name)){
+               toDoList.id = toDoProject.nextId;
+               ++toDoProject.nextId;
                toDoProject.projects.push_back(toDoList);
+            }
             else 
                error(ERR_PROJECT_NAME);
             toDoList.lists.clear();
@@ -880,16 +883,14 @@ void exportProject(ToDo &toDoProject){
 
       else 
          error(ERR_FILE);
-
    }
 
    else{
 
       if(searchProject( toDoProject,  toDoList,  p)){
-
-         cout << F_NAME;
+         
          cin.get();
-         getline(cin, filename);
+         askFileName(filename);
          
          ofstream fe(filename);
 
@@ -1067,9 +1068,7 @@ void summary(const ToDo &toDoProject){
 }
 
 
-void toDoMenu(ToDo &toDoProject,bool askForFileName)
-{
-
+void toDoMenu(ToDo &toDoProject,bool askForFileName){
    char option;
    string filename;  
 
@@ -1100,9 +1099,7 @@ void toDoMenu(ToDo &toDoProject,bool askForFileName)
       case 'q': break;
       default: error(ERR_OPTION);
     }
-  }while(option!='q');
-  
-
+  } while(option!='q');
 }
 
 int main(int argc, char *argv[]){
@@ -1115,7 +1112,7 @@ int main(int argc, char *argv[]){
    if (argc > 1)
       askForFileName = false;
 
-   if (argc == 2)
+   if (argc == 2 || argc > 5 )
       errorArg = true;
 
    if (argc == 5){
