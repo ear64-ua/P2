@@ -1073,7 +1073,6 @@ void toDoMenu(ToDo &toDoProject,bool askForFileName)
    char option;
    string filename;  
 
-   toDoProject.nextId = 1;
    toDoProject.name = "My ToDo list";
 
   do{
@@ -1111,8 +1110,13 @@ int main(int argc, char *argv[]){
    ToDo toDoProject;
    bool askForFileName = true, errorArg = false;
 
+   toDoProject.nextId = 1;
+
    if (argc > 1)
       askForFileName = false;
+
+   if (argc == 2)
+      errorArg = true;
 
    if (argc == 5){
       if(string(argv[1]) == "-i" && string(argv[3]) == "-l"){
