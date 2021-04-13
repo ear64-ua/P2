@@ -711,23 +711,22 @@ void assignData(string s, Project &toDoList, ToDo &toDoProject,List &listData,bo
       toDoList.name = s;
    }
 
-   if (chain[0]== '*'){ // si es una descripcion y hay nombre
+   if (chain[0]== '*'){ // si es una descripcion
       s.replace(0,1,"");
       toDoList.description = s;
    }
 
-   if (isList && chain[0] != '@' && (chain[0]!= '<' && chain[0]!= '>')){ // si no es un nombre de lista, ni < ó >,  es una tarea
+   if (isList && chain[0] != '@' && (chain[0]!= '<' && chain[0]!= '>')){ // si estamos en una lista y no es un nombre de lista, ni < ó >,  es una tarea
       isolateTask(s,listData);
    }
 
-   if (isList && chain[0]== '@'){ // si vuelve a ser una lista o termina el proyecto
+   if (isList && chain[0]== '@'){ // si estamos en una lista y vuelve a ser una lista
       toDoList.lists.push_back(listData);
       listData.tasks.clear();
-      isList = false;
+      isList = false;    // termina nuestra lista actual
    }
 
-   if (!isList && chain[0]== '@') { // si es un nombre de lista y hay un nombre
-
+   if (!isList && chain[0]== '@') { // si no estamos en una lista y hay un nombre de lista 
       s.replace(0,1,"");
       listData.name=s;
       isList = true;
@@ -741,6 +740,30 @@ void askFileName(string &filename){
 
 }
 
+void endsProject(ToDo &toDoProject,Project &toDoList, List &listData, bool &read, bool &searchProject, bool &isList ){
+
+   toDoList.lists.push_back(listData); // empuja la última lista con tareas
+   listData.tasks.clear();
+   listData.name.erase();
+   
+   read = false; 
+   searchProject = true;         
+   isList = false;
+   
+   // borra el contenido de la estructura para seguir trabajando con él 
+   if (checkProjectName(toDoProject , toDoList.name)){
+
+      toDoList.id = toDoProject.nextId;
+      ++toDoProject.nextId;
+      toDoProject.projects.push_back(toDoList);
+   }
+   else 
+      error(ERR_PROJECT_NAME);
+
+   toDoList.lists.clear();
+   toDoList.description="";
+}
+
 void importProject(ToDo &toDoProject, string filename, bool askForFileName){
     
    List listData;
@@ -748,7 +771,6 @@ void importProject(ToDo &toDoProject, string filename, bool askForFileName){
    string data;
    bool read,searchProject, isList=false;
    int size;
-
 
    if (askForFileName) 
       askFileName(filename);
@@ -762,44 +784,22 @@ void importProject(ToDo &toDoProject, string filename, bool askForFileName){
          size = s.length();
          char chain[size];
          strcpy(chain,s.c_str());
-	   		// encuentra el < y asume que empieza un proyecto
+	   	// encuentra el < y asume que empieza un proyecto
          if (chain[0]== '<'){
             read=true;
             searchProject = false;
          }
-         
-         // ejcuta el proyecto
-
+         // termina el proyecto
          if (chain[0]== '>'){
-            
-            toDoList.lists.push_back(listData); // empuja la última lista con tareas
-            listData.tasks.clear();
-            listData.name.erase();
-             
-            read = false; 
-            searchProject = true;         
-            isList = false;
-           // borra el contenido de la estructura para seguir trabajando con él 
-            if (checkProjectName(toDoProject , toDoList.name)){
-               toDoList.id = toDoProject.nextId;
-               ++toDoProject.nextId;
-               toDoProject.projects.push_back(toDoList);
-            }
-            else 
-               error(ERR_PROJECT_NAME);
-            toDoList.lists.clear();
-            toDoList.description="";
-            
-          }
-
+            endsProject(toDoProject, toDoList, listData, read, searchProject, isList);
+         }
+         // ejecuta el proyecto
 			if (read)
 				assignData(s, toDoList, toDoProject, listData, searchProject, isList, chain);
-            // termina el proyecto               
+                           
 		}
-
 		fl.close();
    }
-
    else 
       error(ERR_FILE);
 }
@@ -867,11 +867,9 @@ void exportProject(ToDo &toDoProject){
    Project toDoList;
    bool isBin = false;
 
-
    if (confirm(isBin)){
       
       askFileName(filename);
-         
       ofstream fe(filename);
 
       if (fe.is_open()){
@@ -979,10 +977,7 @@ void saveData(ToDo &toDoProject){
    BinList binaryList;
    BinTask binaryTask;
    
-   
    askFileName(filename);
-
-
    ofstream file(filename, ios::out | ios::binary );
 
    if (file.is_open()){
@@ -1128,7 +1123,6 @@ int main(int argc, char *argv[]){
       
       else 
          errorArg = true;
-      
    }
    
    else if (argc==3){
