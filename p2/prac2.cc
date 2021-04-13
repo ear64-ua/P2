@@ -642,7 +642,7 @@ void separateTaskData(string &s,string &name, string &date, string &boolean, int
    
    int i=0, end=0, count = 0;
 
-   while( end = s.find("|", i), end >= 0 )
+   while( end = s.find("|", i), end >= 0 ) // agarra la posición de donde termina cada '|' y se va guardando en cada variable
    {
       if (count == 0)
          name = s.substr(i, end - i);
@@ -650,12 +650,12 @@ void separateTaskData(string &s,string &name, string &date, string &boolean, int
          date = s.substr(i, end - i);
       if (count == 2)
          boolean = s.substr(i, end - i);
-      
+
       count++;
       i = end + 1;
    }
 
-   if (count == 3)
+   if (count == 3) // después del último '|' corresponde al tiempo
       time = stoi(s.substr(i));
 
 }
@@ -669,17 +669,16 @@ void isolateTask(string &s, List &listData){
    separateTaskData(s,name,date,boolean,time);
    returnDate(date,day,month,year);
 
-   if(checkDate(day,month,year)){
+   if(checkDate(day,month,year)){ // si la fecha es correcta se empiezan a asignar los datos de la tarea
 
       taskData.deadline.day = day;
       taskData.deadline.month = month;
       taskData.deadline.year = year;
-
       taskData.name = name;
       taskData.time = time;
 
       if (boolean == "F")
-   	   taskData.isDone = false;
+         taskData.isDone = false;
 
       else 
          taskData.isDone = true;
@@ -696,6 +695,7 @@ void isolateTask(string &s, List &listData){
 }
 
 bool checkProjectName(ToDo &toDoProject , string name){
+// comprueba que ya existe un proyecto con ese nombre
    for (unsigned i = 0; i < toDoProject.projects.size(); i++){
       if (toDoProject.projects[i].name == name)
          return false;
@@ -784,7 +784,7 @@ void importProject(ToDo &toDoProject, string filename, bool askForFileName){
          size = s.length();
          char chain[size];
          strcpy(chain,s.c_str());
-	   	// encuentra el < y asume que empieza un proyecto
+	       // encuentra el < y asume que empieza un proyecto
          if (chain[0]== '<'){
             read=true;
             searchProject = false;
@@ -794,9 +794,8 @@ void importProject(ToDo &toDoProject, string filename, bool askForFileName){
             endsProject(toDoProject, toDoList, listData, read, searchProject, isList);
          }
          // ejecuta el proyecto
-			if (read)
-				assignData(s, toDoList, toDoProject, listData, searchProject, isList, chain);
-                           
+         if (read)
+            assignData(s, toDoList, toDoProject, listData, searchProject, isList, chain);               
 		}
 		fl.close();
    }
@@ -830,10 +829,10 @@ void readProject(const ToDo &toDoProject, unsigned p, ofstream &fe){
             fe << "F";
 
          fe << "|" << toDoProject.projects[p].lists[i].tasks[j].time << endl;
-         }
       }
+   }
       
-      fe << ">" << endl;
+   fe << ">" << endl;
 }
 
 bool confirm(bool isBin){
@@ -842,10 +841,10 @@ bool confirm(bool isBin){
 
    do {
 
-      if (isBin)
+      if (isBin)   // si es binario pide confirmación 
          cout << YES_NO;
-      else if (!isBin)
-         cout << P_SAVE;
+      else if (!isBin)  // si no es binario se pide el num de proyectos 
+         cout << P_SAVE; 
       
       getline(cin, answer);
 
@@ -872,7 +871,7 @@ void exportProject(ToDo &toDoProject){
       askFileName(filename);
       ofstream fe(filename);
 
-      if (fe.is_open()){
+      if (fe.is_open()){ //si la respuesta es "y/Y" exporta todos los proyectos 
          for (unsigned i = 0; i < toDoProject.projects.size(); i++)
             readProject(toDoProject, i, fe);
          
@@ -885,14 +884,14 @@ void exportProject(ToDo &toDoProject){
 
    else{
 
-      if(searchProject( toDoProject,  toDoList,  p)){
+      if(searchProject( toDoProject,  toDoList,  p)){ // encuentra el proyecto con su correspondiente id
          
          cin.get();
          askFileName(filename);
          
          ofstream fe(filename);
 
-         if (fe.is_open()){
+         if (fe.is_open()){ // si la respuesta es "n/N" exporta un solo proyecto
             readProject(toDoProject, p, fe);
             fe.close();
          }
@@ -902,16 +901,43 @@ void exportProject(ToDo &toDoProject){
    }
 }
 
+void loadList(ToDo &toDoProject, unsigned i, ifstream &file, unsigned projectSize){
+
+   BinList binaryList;
+   BinTask binaryTask;
+   List pushList;
+   Task pushTask;
+
+   for (unsigned j = 0; j < projectSize ; j++ ){
+
+      file.read((char * ) &binaryList, sizeof(BinList));
+
+      pushList.name = binaryList.name;
+
+      toDoProject.projects[i].lists.push_back(pushList);
+
+      for (unsigned k = 0; k < binaryList.numTasks ; k++ ){
+
+         file.read((char * ) &binaryTask, sizeof(BinTask));
+
+         pushTask.name = binaryTask.name;
+         pushTask.deadline.day = binaryTask.deadline.day;
+         pushTask.deadline.month = binaryTask.deadline.month;
+         pushTask.deadline.year = binaryTask.deadline.year;
+         pushTask.isDone = binaryTask.isDone;
+         pushTask.time = binaryTask.time;
+
+         toDoProject.projects[i].lists[j].tasks.push_back(pushTask);
+      }
+   }
+}
+
 void loadData(ToDo &toDoProject, string filename, bool askForFileName){
     
    BinToDo binaryToDo; 
    BinProject binaryProject;
-   BinList binaryList;
-   BinTask binaryTask;
    string answer;
    Project pushProj;
-   List pushList;
-   Task pushTask;
 
    bool isBin = true;
 
@@ -941,31 +967,39 @@ void loadData(ToDo &toDoProject, string filename, bool askForFileName){
 
             toDoProject.projects.push_back(pushProj);
 
-            for (unsigned j = 0; j < binaryProject.numLists ; j++ ){
-
-               file.read((char * ) &binaryList, sizeof(BinList));
-
-               pushList.name = binaryList.name;
-
-               toDoProject.projects[i].lists.push_back(pushList);
-
-               for (unsigned k = 0; k < binaryList.numTasks ; k++ ){
-
-                  file.read((char * ) &binaryTask, sizeof(BinTask));
-
-                  pushTask.name = binaryTask.name;
-                  pushTask.deadline.day = binaryTask.deadline.day;
-                  pushTask.deadline.month = binaryTask.deadline.month;
-                  pushTask.deadline.year = binaryTask.deadline.year;
-                  pushTask.isDone = binaryTask.isDone;
-                  pushTask.time = binaryTask.time;
-
-                  toDoProject.projects[i].lists[j].tasks.push_back(pushTask);
-               }
-            }
+            loadList(toDoProject, i , file, binaryProject.numLists);
          }
       }
       file.close(); 
+   }
+}
+
+void saveList(ToDo &toDoProject, unsigned i, ofstream &file){
+
+   BinList binaryList;
+   BinTask binaryTask;
+
+   for (unsigned j = 0; j < toDoProject.projects[i].lists.size(); j++){
+            
+      strncpy (binaryList.name, toDoProject.projects[i].lists[j].name.c_str(), KMAXNAME);
+      binaryList.name[KMAXNAME-1]='\0';
+      binaryList.numTasks = toDoProject.projects[i].lists[j].tasks.size();
+      file.write((const char *)&binaryList, sizeof(BinList));   // para que se escriba la estructura List
+
+      for (unsigned k = 0; k < toDoProject.projects[i].lists[j].tasks.size(); k++){
+
+         strncpy (binaryTask.name, toDoProject.projects[i].lists[j].tasks[k].name.c_str(), KMAXNAME);
+         binaryTask.name[KMAXNAME-1]='\0';
+
+         binaryTask.deadline.day = toDoProject.projects[i].lists[j].tasks[k].deadline.day;
+         binaryTask.deadline.month = toDoProject.projects[i].lists[j].tasks[k].deadline.month;
+         binaryTask.deadline.year = toDoProject.projects[i].lists[j].tasks[k].deadline.year;
+
+         binaryTask.isDone = toDoProject.projects[i].lists[j].tasks[k].isDone;
+
+         binaryTask.time = toDoProject.projects[i].lists[j].tasks[k].time;
+         file.write((const char *)&binaryTask, sizeof(BinTask));   // para que se escriba la estructura Task
+      }
    }
 }
 
@@ -974,8 +1008,6 @@ void saveData(ToDo &toDoProject){
    string filename;
    BinToDo binaryToDo;
    BinProject binaryProject;
-   BinList binaryList;
-   BinTask binaryTask;
    
    askFileName(filename);
    ofstream file(filename, ios::out | ios::binary );
@@ -1003,28 +1035,8 @@ void saveData(ToDo &toDoProject){
          binaryProject.numLists = toDoProject.projects[i].lists.size();
          file.write((const char *)&binaryProject, sizeof(BinProject));   // para que se escriba la estructura Project
 
-         for (unsigned j = 0; j < toDoProject.projects[i].lists.size(); j++){
-            
-            strncpy (binaryList.name, toDoProject.projects[i].lists[j].name.c_str(), KMAXNAME);
-            binaryList.name[KMAXNAME-1]='\0';
-            binaryList.numTasks = toDoProject.projects[i].lists[j].tasks.size();
-            file.write((const char *)&binaryList, sizeof(BinList));   // para que se escriba la estructura List
+         saveList(toDoProject, i, file);
 
-            for (unsigned k = 0; k < toDoProject.projects[i].lists[j].tasks.size(); k++){
-
-               strncpy (binaryTask.name, toDoProject.projects[i].lists[j].tasks[k].name.c_str(), KMAXNAME);
-               binaryTask.name[KMAXNAME-1]='\0';
-
-               binaryTask.deadline.day = toDoProject.projects[i].lists[j].tasks[k].deadline.day;
-               binaryTask.deadline.month = toDoProject.projects[i].lists[j].tasks[k].deadline.month;
-               binaryTask.deadline.year = toDoProject.projects[i].lists[j].tasks[k].deadline.year;
-
-               binaryTask.isDone = toDoProject.projects[i].lists[j].tasks[k].isDone;
-
-               binaryTask.time = toDoProject.projects[i].lists[j].tasks[k].time;
-               file.write((const char *)&binaryTask, sizeof(BinTask));   // para que se escriba la estructura Task
-            }
-         }
       }
 
       file.close();
