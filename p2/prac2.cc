@@ -764,7 +764,7 @@ void endsProject(ToDo &toDoProject,Project &toDoList, List &listData, bool &read
    toDoList.description="";
 }
 
-void importProject(ToDo &toDoProject, string filename, bool askForFileName){
+bool importProject(ToDo &toDoProject, string filename, bool askForFileName){
     
    List listData;
    Project toDoList;
@@ -799,8 +799,13 @@ void importProject(ToDo &toDoProject, string filename, bool askForFileName){
 		}
 		fl.close();
    }
-   else 
+   
+   else {
       error(ERR_FILE);
+      return false;   
+   }
+
+   return true;
 }
 
 void readProject(const ToDo &toDoProject, unsigned p, ofstream &fe){
@@ -841,7 +846,7 @@ bool confirm(bool isBin){
 
    do {
 
-      if (isBin)   // si es binario pide confirmación 
+      if (isBin) // si es binario pide confirmación 
          cout << YES_NO;
       else if (!isBin)  // si no es binario se pide el num de proyectos 
          cout << P_SAVE; 
@@ -932,7 +937,7 @@ void loadList(ToDo &toDoProject, unsigned i, ifstream &file, unsigned projectSiz
    }
 }
 
-void loadData(ToDo &toDoProject, string filename, bool askForFileName){
+bool loadData(ToDo &toDoProject, string filename, bool askForFileName){
     
    BinToDo binaryToDo; 
    BinProject binaryProject;
@@ -972,6 +977,13 @@ void loadData(ToDo &toDoProject, string filename, bool askForFileName){
       }
       file.close(); 
    }
+
+   else {
+      error(ERR_FILE);
+      return false;   
+   }
+
+   return true;
 }
 
 void saveList(ToDo &toDoProject, unsigned i, ofstream &file){
@@ -1069,7 +1081,6 @@ void summary(const ToDo &toDoProject){
          	taskCounter++;
           }
       }
-      
       cout << "(" << toDoProject.projects[j].id << ") " << toDoProject.projects[j].name << "["<< taskCountDone << "/" << taskCounter << "]" << endl;
     }
 }
@@ -1109,58 +1120,69 @@ void toDoMenu(ToDo &toDoProject,bool askForFileName){
   } while(option!='q');
 }
 
-int main(int argc, char *argv[]){
+int arguments(ToDo &toDoProject, int argc, vector<string> vecArguments, bool askForFileName){
 
-   ToDo toDoProject;
-   bool askForFileName = true, errorArg = false;
-
-   toDoProject.nextId = 1;
-
-   if (argc > 1)
-      askForFileName = false;
-
-   if (argc == 2 || argc > 5 )
-      errorArg = true;
+   if (argc%2 == 0 || argc > 5 )
+      return 1;
 
    if (argc == 5){
-      if(string(argv[1]) == "-i" && string(argv[3]) == "-l"){
-         loadData(toDoProject, string(argv[4]), askForFileName);
-         importProject(toDoProject, string(argv[2]), askForFileName);
+      if(vecArguments[1] == "-i" && vecArguments[3] == "-l"){
+         if (!loadData(toDoProject, vecArguments[4], askForFileName) || !importProject(toDoProject, vecArguments[2], askForFileName))
+            return 2;
       }
-      else if (string(argv[1]) == "-l" && string(argv[3]) == "-i"){
-         loadData(toDoProject, string(argv[2]), askForFileName);
-         importProject(toDoProject, string(argv[4]), askForFileName);
-
+      else if (vecArguments[1] == "-l" && vecArguments[3] == "-i"){
+         if (!loadData(toDoProject, vecArguments[2], askForFileName) || !importProject(toDoProject, vecArguments[4], askForFileName))
+            return 2;
       }
       
       else 
-         errorArg = true;
+         return 1;
    }
    
    else if (argc==3){
       
-      if (string(argv[1])=="-l")
-         loadData(toDoProject, string(argv[2]), askForFileName);
-      
+      if (vecArguments[1]=="-l"){
+         if(!loadData(toDoProject, vecArguments[2], askForFileName))
+            return 2;
+      }
    
-      else if (string(argv[1])=="-i")
-         importProject(toDoProject, string(argv[2]), askForFileName);
-      
+      else if (vecArguments[1]=="-i"){
+         if(!importProject(toDoProject, vecArguments[2], askForFileName))
+            return 2;
+      }
       
       else
-         errorArg = true;
+         return 1;
    }
+
+   return 0;
+}
+
+int main(int argc, char *argv[]){
    
-   if (!errorArg){
+   vector<string> vecArguments;
+   ToDo toDoProject;
+   bool askForFileName = true;
+   int value;
+
+   toDoProject.nextId = 1;
+
+   for (int i = 0; i < argc; i++)
+      vecArguments.push_back(string(argv[i]));
+
+   if (argc > 1)
+      askForFileName = false;
+   
+   value = arguments(toDoProject, argc, vecArguments, askForFileName);
+
+   if (value==0){
       askForFileName = true;
       toDoMenu(toDoProject, askForFileName);
-
    }
 
-   else 
+   else if (value == 1)
       error(ERR_ARGS);
 
    return 0;
-
 }
 
