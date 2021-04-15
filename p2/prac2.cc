@@ -18,7 +18,9 @@ const string L_NAME = "Enter list name: " ;
 const string T_NAME = "Enter task name: " ;
 const string P_DESC = "Enter project description: ";
 const string DEADLINE = "Enter deadline: ";
-const string EXP_TIME = "Enter expected time: ";
+const string EXP_TIME = "Enter expected time: "; 
+const string IMPORT_ARG = "-i";
+const string LOAD_ARG = "-l";
 
 const int KMAXNAME = 20;
 const int KMAXDESC = 40;
@@ -840,20 +842,14 @@ void readProject(const ToDo &toDoProject, unsigned p, ofstream &fe){
    fe << ">" << endl;
 }
 
-bool confirm(bool isBin){
+bool confirm(string ask){
 
    string answer;
 
    do {
+         cout << ask;
+         getline(cin, answer);
 
-      if (isBin) // si es binario pide confirmación 
-         cout << YES_NO;
-      else if (!isBin)  // si no es binario se pide el num de proyectos 
-         cout << P_SAVE; 
-      
-      getline(cin, answer);
-
-  
    }while(answer != "y" && answer != "n" && answer != "Y" && answer != "N" );
 
    if ( answer == "y" ||  answer == "Y")
@@ -869,9 +865,8 @@ void exportProject(ToDo &toDoProject){
    string filename;
    unsigned p;
    Project toDoList;
-   bool isBin = false;
 
-   if (confirm(isBin)){
+   if (confirm(P_SAVE)){
       
       askFileName(filename);
       ofstream fe(filename);
@@ -944,15 +939,13 @@ bool loadData(ToDo &toDoProject, string filename, bool askForFileName){
    string answer;
    Project pushProj;
 
-   bool isBin = true;
-
    if (askForFileName)
       askFileName(filename);
    
    ifstream file(filename, ios::in | ios::binary);
 
    if (file.is_open()){
-      if (!askForFileName || confirm(isBin))
+      if (!askForFileName || confirm(YES_NO))
       {
          askForFileName = true;
          toDoProject.nextId = 1;
@@ -1048,7 +1041,6 @@ void saveData(ToDo &toDoProject){
          file.write((const char *)&binaryProject, sizeof(BinProject));   // para que se escriba la estructura Project
 
          saveList(toDoProject, i, file);
-
       }
 
       file.close();
@@ -1122,31 +1114,31 @@ void toDoMenu(ToDo &toDoProject,bool askForFileName){
 
 int arguments(ToDo &toDoProject, int argc, vector<string> vecArguments, bool askForFileName){
 
-   if (argc%2 == 0 || argc > 5 )
+   if (argc%2 == 0 || argc > 5 ) // si hay 2 o 4 o más de 5 argumentos, hay error de argumentos
       return 1;
 
    if (argc == 5){
-      if(vecArguments[1] == "-i" && vecArguments[3] == "-l"){
+      if(vecArguments[1] == IMPORT_ARG && vecArguments[3] == LOAD_ARG){
          if (!loadData(toDoProject, vecArguments[4], askForFileName) || !importProject(toDoProject, vecArguments[2], askForFileName))
-            return 2;
+            return 2; // si hay error de fichero, se devuelve 2 y termina la función sin procesar nada más
       }
-      else if (vecArguments[1] == "-l" && vecArguments[3] == "-i"){
+      else if (vecArguments[1] == LOAD_ARG && vecArguments[3] == IMPORT_ARG){
          if (!loadData(toDoProject, vecArguments[2], askForFileName) || !importProject(toDoProject, vecArguments[4], askForFileName))
             return 2;
       }
       
       else 
-         return 1;
+         return 1; // si no se cumple ningún caso, hay error de argumentos
    }
    
    else if (argc==3){
       
-      if (vecArguments[1]=="-l"){
+      if (vecArguments[1]==LOAD_ARG){
          if(!loadData(toDoProject, vecArguments[2], askForFileName))
             return 2;
       }
    
-      else if (vecArguments[1]=="-i"){
+      else if (vecArguments[1]==IMPORT_ARG){
          if(!importProject(toDoProject, vecArguments[2], askForFileName))
             return 2;
       }
@@ -1175,7 +1167,7 @@ int main(int argc, char *argv[]){
    
    value = arguments(toDoProject, argc, vecArguments, askForFileName);
 
-   if (value==0){
+   if (value==0){ // si no hay errores, se muestra el Menu
       askForFileName = true;
       toDoMenu(toDoProject, askForFileName);
    }
@@ -1185,4 +1177,3 @@ int main(int argc, char *argv[]){
 
    return 0;
 }
-
