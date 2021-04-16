@@ -530,8 +530,8 @@ void report(const Project &toDoList){
    cout << "Total done: "<< countDone << " (" << timeDone << " minutes)" << endl;
 
    if (PriorDay != MAX_DAY + 1 ){
-     cout << "Highest priority: " << highestName << " (";
-     cout << PriorYear << "-" << PriorMonth << "-" << PriorDay << ")" << endl;
+      cout << "Highest priority: " << highestName << " (";
+      cout << PriorYear << "-" << PriorMonth << "-" << PriorDay << ")" << endl;
    }
 }
 
@@ -772,7 +772,6 @@ bool importProject(ToDo &toDoProject, string filename, bool askForFileName){
    Project toDoList;
    string data;
    bool read,searchProject, isList=false;
-   int size;
 
    if (askForFileName) 
       askFileName(filename);
@@ -783,8 +782,7 @@ bool importProject(ToDo &toDoProject, string filename, bool askForFileName){
       string s;
       while(getline(fl,s)){
          
-         size = s.length();
-         char chain[size];
+         char chain[s.length()];
          strcpy(chain,s.c_str());
 	       // encuentra el < y asume que empieza un proyecto
          if (chain[0]== '<'){
@@ -847,8 +845,8 @@ bool confirm(string ask){
    string answer;
 
    do {
-         cout << ask;
-         getline(cin, answer);
+      cout << ask;
+      getline(cin, answer);
 
    }while(answer != "y" && answer != "n" && answer != "Y" && answer != "N" );
 
@@ -866,12 +864,12 @@ void exportProject(ToDo &toDoProject){
    unsigned p;
    Project toDoList;
 
-   if (confirm(P_SAVE)){
+   if (confirm(P_SAVE)){ //si la respuesta es "y/Y" exporta todos los proyectos 
       
       askFileName(filename);
       ofstream fe(filename);
 
-      if (fe.is_open()){ //si la respuesta es "y/Y" exporta todos los proyectos 
+      if (fe.is_open()){ 
          for (unsigned i = 0; i < toDoProject.projects.size(); i++)
             readProject(toDoProject, i, fe);
          
@@ -882,7 +880,7 @@ void exportProject(ToDo &toDoProject){
          error(ERR_FILE);
    }
 
-   else{
+   else{// si la respuesta es "n/N" exporta un solo proyecto
 
       if(searchProject( toDoProject,  toDoList,  p)){ // encuentra el proyecto con su correspondiente id
          
@@ -891,7 +889,7 @@ void exportProject(ToDo &toDoProject){
          
          ofstream fe(filename);
 
-         if (fe.is_open()){ // si la respuesta es "n/N" exporta un solo proyecto
+         if (fe.is_open()){ 
             readProject(toDoProject, p, fe);
             fe.close();
          }
@@ -910,7 +908,7 @@ void loadList(ToDo &toDoProject, unsigned i, ifstream &file, unsigned projectSiz
 
    for (unsigned j = 0; j < projectSize ; j++ ){
 
-      file.read((char * ) &binaryList, sizeof(BinList));
+      file.read((char * ) &binaryList, sizeof(BinList)); // empieza a leer todas las listas que son recorridas
 
       pushList.name = binaryList.name;
 
@@ -918,7 +916,7 @@ void loadList(ToDo &toDoProject, unsigned i, ifstream &file, unsigned projectSiz
 
       for (unsigned k = 0; k < binaryList.numTasks ; k++ ){
 
-         file.read((char * ) &binaryTask, sizeof(BinTask));
+         file.read((char * ) &binaryTask, sizeof(BinTask)); // leemos la tarea de cada lista y le asignamos sus valores
 
          pushTask.name = binaryTask.name;
          pushTask.deadline.day = binaryTask.deadline.day;
@@ -986,14 +984,14 @@ void saveList(ToDo &toDoProject, unsigned i, ofstream &file){
 
    for (unsigned j = 0; j < toDoProject.projects[i].lists.size(); j++){
             
-      strncpy (binaryList.name, toDoProject.projects[i].lists[j].name.c_str(), KMAXNAME);
+      strncpy (binaryList.name, toDoProject.projects[i].lists[j].name.c_str(), KMAXNAME-1);
       binaryList.name[KMAXNAME-1]='\0';
       binaryList.numTasks = toDoProject.projects[i].lists[j].tasks.size();
       file.write((const char *)&binaryList, sizeof(BinList));   // para que se escriba la estructura List
 
       for (unsigned k = 0; k < toDoProject.projects[i].lists[j].tasks.size(); k++){
 
-         strncpy (binaryTask.name, toDoProject.projects[i].lists[j].tasks[k].name.c_str(), KMAXNAME);
+         strncpy (binaryTask.name, toDoProject.projects[i].lists[j].tasks[k].name.c_str(), KMAXNAME-1);
          binaryTask.name[KMAXNAME-1]='\0';
 
          binaryTask.deadline.day = toDoProject.projects[i].lists[j].tasks[k].deadline.day;
@@ -1019,23 +1017,23 @@ void saveData(ToDo &toDoProject){
 
    if (file.is_open()){
 
-      strncpy (binaryToDo.name,toDoProject.name.c_str(),KMAXNAME);
+      strncpy (binaryToDo.name,toDoProject.name.c_str(),KMAXNAME-1);
       binaryToDo.name[KMAXNAME-1]='\0';
       binaryToDo.numProjects = toDoProject.projects.size();
-      file.write((const char *)&binaryToDo, sizeof(BinToDo));  // para que se esctiba la estructura ToDo
+      file.write((const char *)&binaryToDo, sizeof(BinToDo));  // para que se escriba la estructura ToDo
 
       for (unsigned i = 0; i < toDoProject.projects.size(); i++){
          
-         strncpy (binaryProject.name, toDoProject.projects[i].name.c_str(), KMAXNAME);
+         strncpy (binaryProject.name, toDoProject.projects[i].name.c_str(), KMAXNAME-1);
          binaryProject.name[KMAXNAME-1]='\0';
 
          if (toDoProject.projects[i].name.length()!=0){
-            strncpy (binaryProject.description, toDoProject.projects[i].description.c_str(), KMAXDESC);            
+            strncpy (binaryProject.description, toDoProject.projects[i].description.c_str(), KMAXDESC-1);            
             binaryProject.description[KMAXDESC-1]='\0';
          }
 
          else 
-         	strcpy(binaryProject.description,"");
+            strcpy(binaryProject.description,"");
 
          binaryProject.numLists = toDoProject.projects[i].lists.size();
          file.write((const char *)&binaryProject, sizeof(BinProject));   // para que se escriba la estructura Project
@@ -1068,7 +1066,7 @@ void summary(const ToDo &toDoProject){
          for (k = 0; k < toDoList.lists[i].tasks.size(); k++){
 
             if (toDoList.lists[i].tasks[k].isDone)
-         	 	taskCountDone++;
+               taskCountDone++;
 
          	taskCounter++;
           }
@@ -1084,32 +1082,32 @@ void toDoMenu(ToDo &toDoProject,bool askForFileName){
 
    toDoProject.name = "My ToDo list";
 
-  do{
-    showMainMenu();
-    cin >> option;
-    cin.get();
+   do{
+      showMainMenu();
+      cin >> option;
+      cin.get();
     
-    switch(option){
-      case '1': projectMenu(toDoProject);
-                break;
-      case '2': addProject(toDoProject);
-                break;
-      case '3': deleteProject(toDoProject);
-                break;
-      case '4': importProject(toDoProject, filename, askForFileName);
-                break;
-      case '5': exportProject(toDoProject);
-                break;
-      case '6': loadData(toDoProject, filename, askForFileName);
-                break;
-      case '7': saveData(toDoProject);
-                break;
-      case '8': summary(toDoProject);
-                break;
-      case 'q': break;
-      default: error(ERR_OPTION);
-    }
-  } while(option!='q');
+      switch(option){
+         case '1': projectMenu(toDoProject);
+                   break;
+         case '2': addProject(toDoProject);
+                   break;
+         case '3': deleteProject(toDoProject);
+                   break;
+         case '4': importProject(toDoProject, filename, askForFileName);
+                   break;
+         case '5': exportProject(toDoProject);
+                   break;
+         case '6': loadData(toDoProject, filename, askForFileName);
+                   break;
+         case '7': saveData(toDoProject);
+                   break;
+         case '8': summary(toDoProject);
+                   break;
+         case 'q': break;
+         default: error(ERR_OPTION);
+      }
+   } while(option!='q');
 }
 
 int arguments(ToDo &toDoProject, int argc, vector<string> vecArguments, bool askForFileName){
