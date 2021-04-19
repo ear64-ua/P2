@@ -1,0 +1,43 @@
+             TIEMPO DEDICADO A LA PRÁCTICA 1
+
+
+Preparación
+
+   Investigación sobre
+   Los binarios        --------------------- 30 min                     
+
+   Entender la 
+   estructura binaria  --------------------- 20 min
+   del programa
+
+ 		          Total Preparación: 50 min
+___________________________________________________
+
+Opción
+
+   Opción projectMenu    --------------------- 10 min
+   Opción addProject     --------------------- 15 min
+   Opción deleteProject  --------------------- 10 min
+   Opción importProject  --------------------- 3 hr
+   Opción exportProject  --------------------- 1 hr 30 min
+   Opción loadData       --------------------- 2 hr
+   Opción saveData       --------------------- 1 hr
+   Opción summary        --------------------- 10 min
+
+   
+   		         Total: 8 hr 15 min
+___________________________________________________ 
+
+Corrección de código
+
+   Indentación de código        -----------   5 min
+   Autocorrector                -----------   20 min
+   Añadir comentarios           -----------   10 min
+
+		 Total Corrección de código: 15 min
+
+___________________________________________________
+
+			       Total: ~ 8:10 - 9:10 hrs
+
+ENRIQUE ABMA ROMERO
