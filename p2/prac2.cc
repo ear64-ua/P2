@@ -743,10 +743,11 @@ void askFileName(string &filename){
 }
 
 void endsProject(ToDo &toDoProject,Project &toDoList, List &listData, bool &read, bool &searchProject, bool &isList ){
-
-   toDoList.lists.push_back(listData); // empuja la última lista con tareas
-   listData.tasks.clear();
-   listData.name.erase();
+   if (isList){
+      toDoList.lists.push_back(listData); // empuja la última lista con tareas
+      listData.tasks.clear();
+      listData.name.erase();
+   }
    
    read = false; 
    searchProject = true;         
