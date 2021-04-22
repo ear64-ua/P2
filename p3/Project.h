@@ -10,6 +10,7 @@ class Project{
       int id;
       string name;
       string description
+      const int getPosList(string name);
    
    public:
       Project(string name,string description="");
@@ -17,7 +18,6 @@ class Project{
       const int getId();
       const string getName();
       const string getDescription();
-      static const int getPosList(string name);
 
       bool setId(int id);
       bool setName(string name);
