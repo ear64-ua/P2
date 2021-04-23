@@ -16,13 +16,14 @@ class List{
    public:
       List(string name);
       ~List();
-      const string getName();
-      const vector<Task> getTasks();
-      const unsigned getNumTasks();
-      const unsigned getNumDone();
-      const int getTimeTasks();
-      const int getTimeDone();
-      const int getPosTask(string name);
+
+      string getName const(){return name;}
+      vector<Task> getTasks() const {return tasks;}
+      unsigned getNumTasks() const;
+      unsigned getNumDone() const;
+      int getTimeTasks() const;
+      int getTimeDone() const;
+      int getPosTask(string name) const;
 
       bool setName(string name);
       void addTask(const Task& task);
