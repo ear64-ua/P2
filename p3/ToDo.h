@@ -18,7 +18,7 @@ class ToDo{
    
    public:
       ToDo(string name);
-
+      ~ToDo();
       string getName() const {return name;}
 
       bool setName(string name);

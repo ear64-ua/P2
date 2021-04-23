@@ -15,7 +15,7 @@ class List{
 
    public:
       List(string name);
-      
+      ~List();
       const string getName();
       const vector<Task> getTasks();
       const unsigned getNumTasks();

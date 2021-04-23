@@ -23,7 +23,7 @@ class Task{
 
    public:
       Task(string name);
-      
+      ~Task();
       string getName() const {return name;}
       Date getDeadline() const {return deadline;}
       bool getIsDone() const {return isDone;}
