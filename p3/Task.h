@@ -27,7 +27,7 @@ class Task{
       string getName() const {return name;}
       Date getDeadline() const {return deadline;}
       bool getIsDone() const {return isDone;}
-      ont getTime() const {return time;}
+      int getTime() const {return time;}
 
       void setName(string name);
       bool setDeadline(string deadline);
