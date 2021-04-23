@@ -1,5 +1,8 @@
-#include <iostream>
+#ifndef _LIST_H_
+#define _LIST_H_
 
+#include <iostream>
+#include "Task.h"
 using namespace std;
 
 class List{
@@ -8,6 +11,7 @@ class List{
 
    protected:
       string name;
+      vector<Task> tasks;
 
    public:
       List(string name);
@@ -25,3 +29,5 @@ class List{
       bool deleteTask(string name);
       bool toggleTask(string name);
 };
+
+#endif

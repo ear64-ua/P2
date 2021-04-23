@@ -1,5 +1,8 @@
-#include <iostream>
+#ifndef _PROJECT_H_
+#define _PROJECT_H_
 
+#include <iostream>
+#include "List.h"
 using namespace std;
 
 class Project{
@@ -9,15 +12,16 @@ class Project{
    protected: 
       int id;
       string name;
-      string description
-      const int getPosList(string name);
+      string description;
+      vector<List> lists;
+      int getPosList(string name) const;
    
    public:
       Project(string name,string description="");
       
-      const int getId();
-      const string getName();
-      const string getDescription();
+      int getId() const {return name;}
+      string getName() const {return name;}
+      string getDescription() const {return description;}
 
       bool setId(int id);
       bool setName(string name);
@@ -30,5 +34,7 @@ class Project{
       void toggleTaskFromList(string name = "");
       void menu();
 
-      const string summary();
+      string summary() const;
 };
+
+#endif

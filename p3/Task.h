@@ -1,3 +1,6 @@
+#ifndef _TASK_H_
+#define _TASK_H_
+
 #include <iostream>
 
 using namespace std;
@@ -21,13 +24,15 @@ class Task{
    public:
       Task(string name);
       
-      const string getName();
-      const Date getDeadline();
-      const bool getIsDone();
-      const ont getTime();
+      string getName() const {return name;}
+      Date getDeadline() const {return deadline;}
+      bool getIsDone() const {return isDone;}
+      ont getTime() const {return time;}
 
       void setName(string name);
       bool setDeadline(string deadline);
       bool setTime(int time);
       void toggle();
 };
+
+#endif

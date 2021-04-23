@@ -1,5 +1,8 @@
-#include <iostream>
+#ifndef _TODO_H_
+#define _TODO_H_
 
+#include <iostream>
+#include "Project.h"
 using namespace std;
 
 class ToDo{
@@ -9,13 +12,14 @@ class ToDo{
    protected:
       static int nextId = 1;
       string name;
-      const int getPosProject(string name);
-      const int getPosProject(int id);
+      vector<Project> projects;
+      int getPosProject(string name) const;
+      int getPosProject(int id) const;
    
    public:
       ToDo(string name);
 
-      const string getName();
+      string getName() const {return name;}
 
       bool setName(string name);
       void addProject(Project * project);
@@ -24,3 +28,4 @@ class ToDo{
       void ProjectMenu(int id = 0);
 };
 
+#endif
