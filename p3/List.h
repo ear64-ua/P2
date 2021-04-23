@@ -17,7 +17,7 @@ class List{
       List(string name);
       ~List();
 
-      string getName const(){return name;}
+      string getName() const{return name;}
       vector<Task> getTasks() const {return tasks;}
       unsigned getNumTasks() const;
       unsigned getNumDone() const;
