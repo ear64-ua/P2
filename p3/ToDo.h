@@ -13,20 +13,19 @@ class ToDo{
    protected:
       static int nextId = 1;
       string name;
-      vector<Project> projects;
+      vector<Project *> projects;
       int getPosProject(string name) const;
       int getPosProject(int id) const;
    
    public:
       ToDo(string name);
-      ~ToDo();
       string getName() const {return name;}
 
       bool setName(string name);
       void addProject(Project * project);
       void deleteProject(int id = 0);
       void setProjectDescription(string name,string description);
-      void ProjectMenu(int id = 0);
+      void projectMenu(int id = 0);
 };
 
 #endif

@@ -16,7 +16,6 @@ class List{
 
    public:
       List(string name);
-      ~List();
 
       string getName() const{return name;}
       vector<Task> getTasks() const {return tasks;}

@@ -19,7 +19,6 @@ class Project{
    
    public:
       Project(string name,string description="");
-      ~Project();
       int getId() const {return id;}
       string getName() const {return name;}
       string getDescription() const {return description;}

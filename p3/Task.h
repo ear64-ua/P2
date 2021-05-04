@@ -11,6 +11,21 @@ struct Date{
   int year;
 };
 
+enum Months{
+  JANUARY = 1,
+  FEBRUARY,
+  MARCH,
+  APRIL,
+  MAY,
+  JUNE,
+  JULY,
+  AUGUST,
+  SEPTEMBER,
+  OCTOBER,
+  NOVEMBER,
+  DECEMBER
+};
+
 class Task{
 
    friend ostream& operator<<(ostream &os, const Task &t);
@@ -23,7 +38,6 @@ class Task{
 
    public:
       Task(string name);
-      ~Task();
       string getName() const {return name;}
       Date getDeadline() const {return deadline;}
       bool getIsDone() const {return isDone;}
