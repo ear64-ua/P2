@@ -11,21 +11,6 @@ struct Date{
   int year;
 };
 
-enum Months{
-  JANUARY = 1,
-  FEBRUARY,
-  MARCH,
-  APRIL,
-  MAY,
-  JUNE,
-  JULY,
-  AUGUST,
-  SEPTEMBER,
-  OCTOBER,
-  NOVEMBER,
-  DECEMBER
-};
-
 class Task{
 
    friend ostream& operator<<(ostream &os, const Task &t);
