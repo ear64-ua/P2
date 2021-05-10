@@ -24,7 +24,7 @@ void Task::setName(string name)
     this->name=name;
 }
 
-bool Task::setDeadline(string deadline)
+bool Task::getDeadline(string deadline)
 {  
    int k = 0;
    Date date;
