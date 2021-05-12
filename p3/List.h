@@ -8,7 +8,7 @@ using namespace std;
 
 class List{
 
-  friend ostream& operator<<(ostream &os, const List &l);
+  friend ostream& operator<<(ostream &os, const List &list);
 
    protected:
       string name;
@@ -19,7 +19,7 @@ class List{
 
       string getName() const{return name;}
       vector<Task> getTasks() const {return tasks;}
-      unsigned getNumTasks() const;
+      unsigned getNumTasks() const {return tasks.size();};
       unsigned getNumDone() const;
       int getTimeTasks() const;
       int getTimeDone() const;

@@ -13,7 +13,7 @@ struct Date{
 
 class Task{
 
-   friend ostream& operator<<(ostream &os, const Task &t);
+   friend ostream& operator<<(ostream &os, const Task &task);
 
    protected:
       string name;
