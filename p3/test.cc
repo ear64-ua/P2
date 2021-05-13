@@ -58,6 +58,8 @@ int main(){
     
     cout << p1;
 
+    cout << p1.summary();
+
     //LIST
 /*
     List l1(nomblista);

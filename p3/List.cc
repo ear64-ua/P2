@@ -134,7 +134,7 @@ ostream& operator<<(ostream& os, const List &list)
    cout << "Total left: " << list.getNumTasks()-list.getNumDone() 
    << " ("<< list.getTimeTasks()-list.getTimeDone() << " minutes )" << endl;
 
-   cout << "Total done: " << list.getNumDone() << " ("<< list.getTimeDone() << " minutes )" << endl;
+   cout << "Total done: " << list.getNumDone() << " ("<< list.getTimeDone() << " minutes)" << endl;
 
    return os;
 }

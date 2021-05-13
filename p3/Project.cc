@@ -1,5 +1,6 @@
 #include "Project.h"
 #include "Util.h"
+#include <sstream>
 
 
 Project::Project(string name, string description)
@@ -172,6 +173,33 @@ void Project::addTaskToList(string name)
 
    else 
       Util::error(ERR_LIST_NAME);
+}
+
+string Project::summary() const
+{
+
+   int countDone = 0;
+   unsigned i, j;
+   stringstream sum;
+   int k=0;
+   vector<Task> task;
+
+   for ( i = 0; i < lists.size(); i++)
+   {
+      task = lists[i].getTasks();
+
+      for (j = 0; j < task.size(); j++)
+      {
+         k+=1;
+         if (task[j].getIsDone())
+         {
+            countDone+=1;
+   	     }
+   	  }
+   }
+
+   sum << "(" << getId() << ") " << getName() << " [" << countDone << "/" << k << "]";
+   return sum.str();
 }
 
 ostream& operator<<(ostream& os, const Project &p)
