@@ -11,11 +11,55 @@ int main(){
     
     string nombre;
     string nomblista;
-    string isdone;
-    vector <Task> t;
+    string proyName;
+    //string date;
+    //int time;
+    //string isdone;
+    //vector <Task> t;
+
+/*
+   //TASK
+    cout <<"Introduzca nombre de lista: ";
+    getline(cin,nomblista);
+    List l1(nomblista);
+
+   for(int i = 0; i<4;i++){
+    cout << "Introduzca nombre de tarea: ";
+    getline(cin,nombre);
+    Task task(nombre);
+    cout << "Introduzca fecha: ";
+    getline(cin,date);
+    task.setDeadline(date);
+    cout << "Introduzca tiempo: ";
+    cin >> time;
+    cin.get();
+    task.setTime(time);
+    l1.addTask(task);
+    }
+
+    cout << l1 << endl;
+*/
+
+ //PROJECT // 
+
+    getline(cin,proyName);
+    Project p1(proyName,"");
+    cout << p1.getId()<<", "<<p1.getName()<<", "<<p1.getDescription()<<endl;
 
     cout <<"Introduzca nombre de lista: ";
     getline(cin,nomblista);
+    p1.addList(nomblista);
+    p1.addTaskToList(nomblista);
+
+    cout <<"Introduzca nombre de lista: ";
+    getline(cin,nomblista);
+    p1.addList(nomblista);
+    p1.addTaskToList(nomblista);
+    
+    cout << p1;
+
+    //LIST
+/*
     List l1(nomblista);
     
     for(int i = 0; i<4;i++){
@@ -36,14 +80,8 @@ int main(){
     l1.toggleTask(isdone);
     cout << l1;
 
-    //PROJECT:
-    /*Project p1(nproy,"");
-    cout << p1.getId()<<", "<<p1.getName()<<", "<<p1.getDescription()<<endl;
-    cout <<"Introduzca nombre lista 2: ";
-    getline(cin,nomblista);
-    List l2(nomblista);
-    cout<< l2.getName()<<endl;
-    */
+    
+*/
 
     return 0;
 }

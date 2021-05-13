@@ -121,13 +121,20 @@ ostream& operator<<(ostream& os, const List &list)
 
    for (unsigned i = 0; i < list.getNumTasks(); i++)
    {
+      if (!list.tasks[i].getIsDone())
+         cout << list.tasks[i];
+   }
+
+   for (unsigned i = 0; i < list.getNumTasks(); i++)
+   {
+      if (list.tasks[i].getIsDone())
          cout << list.tasks[i];
    }
 
    cout << "Total left: " << list.getNumTasks()-list.getNumDone() 
-   << " ("<< list.getTimeTasks()-list.getTimeDone() << ")" << endl;
+   << " ("<< list.getTimeTasks()-list.getTimeDone() << " minutes )" << endl;
 
-   cout << "Total done: " << list.getNumDone() << " ("<< list.getTimeDone() << ")" << endl;
+   cout << "Total done: " << list.getNumDone() << " ("<< list.getTimeDone() << " minutes )" << endl;
 
    return os;
 }
