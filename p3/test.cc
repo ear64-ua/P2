@@ -50,15 +50,15 @@ int main(){
     getline(cin,nomblista);
     p1.addList(nomblista);
     p1.addTaskToList(nomblista);
-
-    cout <<"Introduzca nombre de lista: ";
-    getline(cin,nomblista);
-    p1.addList(nomblista);
     p1.addTaskToList(nomblista);
     
     cout << p1;
 
     cout << p1.summary();
+
+    p1.deleteTaskFromList(nomblista);
+
+    cout << p1;
 
     //LIST
 /*

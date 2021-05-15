@@ -97,7 +97,7 @@ void Project::addList(string name)
 
 void Project::deleteList(string name)
 {
-   unsigned i,j;
+   int i,j;
    bool found = false;
    List list(name);
 
@@ -108,17 +108,16 @@ void Project::deleteList(string name)
       list.setName(name);
    }
 
-   for(i = 0; i < lists.size(); i++)
-   {
-      if (this->lists[i].getName()==name)
-      {
-         j = i--;
-         lists.erase(lists.begin()+j);
-         found = true;
-      }
+   i = getPosList(name);
+   
+   if (i >= 0)
+   {     
+      j = i--;
+      lists.erase(lists.begin()+j);
+      found = true;
    }
    
-   if (!found)
+   else
       Util::error(ERR_LIST_NAME);
 
 }
@@ -129,8 +128,6 @@ void Project::addTaskToList(string name)
    List list(name);
    string nameTask, date;
    int time = 0, i;
-   bool found = false;
-   unsigned j;
 
    while (name.length()==0)
    {
@@ -138,18 +135,10 @@ void Project::addTaskToList(string name)
       getline(cin,name);
    }
 
-   for ( j = 0; j < lists.size();j++)
-   {
-      if (this->lists[j].getName()==name)
-      {
-         found = true;
-         break;
-      }
-   }
+   i = getPosList(name);
    
-   if (found)
+   if (i>=0)
    {
-      i = getPosList(name);
       
       cout << T_NAME;
       getline(cin,nameTask);
@@ -167,8 +156,29 @@ void Project::addTaskToList(string name)
 
       if (task.setTime(time))
       {
-         lists[j].addTask(task);
+         lists[i].addTask(task);
       }
+   }
+
+   else 
+      Util::error(ERR_LIST_NAME);
+}
+
+void Project::deleteTaskFromList(string name)
+{
+   string nameTask;
+   int i;
+
+   i = getPosList(name);
+   
+   if (i >= 0)
+   {
+      cout << T_NAME;
+      getline(cin,nameTask);
+      if (lists[i].getPosTask(nameTask) >= 0)
+         lists[i].deleteTask(nameTask);
+      else 
+         Util::error(ERR_TASK_NAME);
    }
 
    else 
@@ -192,15 +202,14 @@ string Project::summary() const
       {
          k+=1;
          if (task[j].getIsDone())
-         {
             countDone+=1;
-   	     }
-   	  }
+      }
    }
 
-   sum << "(" << getId() << ") " << getName() << " [" << countDone << "/" << k << "]";
+   sum << "(" << getId() << ") " << getName() << " [" << countDone << "/" << k << "]" << endl;
    return sum.str();
 }
+
 
 ostream& operator<<(ostream& os, const Project &p)
 {
