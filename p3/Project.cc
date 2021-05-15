@@ -61,23 +61,25 @@ void Project::setDescription(string description)
 
 void Project::edit(string name,string description)
 {
-   while (name.length()==0)
+   bool stop; 
+
+   do
    {
       cout << P_NAME;
       getline(cin,name);
 
-      if (name.length() == 0)
-         Util::error(ERR_EMPTY);
+      stop = setName(name);
 
-      else 
+      if (stop) 
          this->name=name;
          
-   }
+   }while (name.length()==0);
 
    if (description.length()==0)
    {
       cout << P_DESC;
       getline(cin,description);
+      setDescription(description);
    }
 }
 
@@ -133,6 +135,9 @@ void Project::addTaskToList(string name)
    {
       cout << L_NAME;
       getline(cin,name);
+
+      if (name.length()==0)
+         Util::error(ERR_EMPTY);
    }
 
    i = getPosList(name);
@@ -169,6 +174,15 @@ void Project::deleteTaskFromList(string name)
    string nameTask;
    int i;
 
+   while (name.length()==0)
+   {
+      cout << L_NAME;
+      getline(cin,name);
+
+      if (name.length()==0)
+         Util::error(ERR_EMPTY);
+   }
+
    i = getPosList(name);
    
    if (i >= 0)
@@ -191,8 +205,17 @@ void Project::toggleTaskFromList(string name)
    string nameTask;
    int i;
 
+   while (name.length()==0)
+   {
+      cout << L_NAME;
+      getline(cin,name);
+
+      if (name.length()==0)
+         Util::error(ERR_EMPTY);
+   }
+
    i = getPosList(name);
-   
+
    if (i >= 0)
    {
       cout << T_NAME;
@@ -207,6 +230,52 @@ void Project::toggleTaskFromList(string name)
       Util::error(ERR_LIST_NAME);
 
 }
+
+void Project::menu()
+{
+
+   string nameProject, description;
+   char option;
+
+   do{
+
+      cout << "1- Edit project" << endl
+       << "2- Add list" << endl
+       << "3- Delete list" << endl 
+       << "4- Add task" << endl
+       << "5- Delete task" << endl
+       << "6- Toggle task" << endl
+       << "7- Report" << endl
+       << "b- Back to main menu" << endl
+       << "Option: ";
+         
+      cin >> option;
+      cin.get();
+
+      switch(option){
+
+         case '1': edit();
+                   break;
+         case '2': addList();
+                   break;
+         case '3': deleteList();
+                   break;
+         case '4': addTaskToList();
+                   break;
+         case '5': deleteTaskFromList();
+                   break;
+         case '6': toggleTaskFromList();
+                   break;
+         case '7': cout << *this << endl;
+                   break;
+         case 'b': 
+                   break;
+
+         default:  Util::error(ERR_OPTION);
+         }
+      }while(option!='b');       
+}
+
 
 string Project::summary() const
 {

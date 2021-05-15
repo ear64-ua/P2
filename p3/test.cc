@@ -50,17 +50,8 @@ int main(){
     getline(cin,nomblista);
     p1.addList(nomblista);
     p1.addTaskToList(nomblista);
-    p1.addTaskToList(nomblista);
-    
-    cout << p1;
 
-    cout << p1.summary();
-
-    p1.deleteTaskFromList(nomblista);
-    p1.toggleTaskFromList(nomblista);
-
-
-    cout << p1;
+    p1.menu();
 
     //LIST
 /*
