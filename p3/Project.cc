@@ -185,6 +185,29 @@ void Project::deleteTaskFromList(string name)
       Util::error(ERR_LIST_NAME);
 }
 
+void Project::toggleTaskFromList(string name)
+{
+
+   string nameTask;
+   int i;
+
+   i = getPosList(name);
+   
+   if (i >= 0)
+   {
+      cout << T_NAME;
+      getline(cin,nameTask);
+      if (lists[i].getPosTask(nameTask) >= 0)
+         lists[i].toggleTask(nameTask);
+      else 
+         Util::error(ERR_TASK_NAME);
+   }
+
+   else 
+      Util::error(ERR_LIST_NAME);
+
+}
+
 string Project::summary() const
 {
 

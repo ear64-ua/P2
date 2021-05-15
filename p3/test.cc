@@ -57,6 +57,8 @@ int main(){
     cout << p1.summary();
 
     p1.deleteTaskFromList(nomblista);
+    p1.toggleTaskFromList(nomblista);
+
 
     cout << p1;
 
