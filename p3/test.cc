@@ -41,15 +41,15 @@ int main(){
 */
 
  //PROJECT // 
-
+    cout << "Introdzca el nombre del proyecto: ";
     getline(cin,proyName);
     Project p1(proyName,"");
     cout << p1.getId()<<", "<<p1.getName()<<", "<<p1.getDescription()<<endl;
 
-    cout <<"Introduzca nombre de lista: ";
-    getline(cin,nomblista);
-    p1.addList(nomblista);
-    p1.addTaskToList(nomblista);
+    //cout <<"Introduzca nombre de lista: ";
+    //getline(cin,nomblista);
+    p1.addList();
+    //p1.addTaskToList(nomblista);
 
     p1.menu();
 

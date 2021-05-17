@@ -18,7 +18,8 @@ Project::Project(string name, string description)
 int Project::getPosList(string name) const
 {   
 
-   for (unsigned i = 0; i < lists.size();i++){
+   for (unsigned i = 0; i < lists.size();i++)
+   {
       if (lists[i].getName()==name)
          return i;
    }
@@ -54,9 +55,7 @@ bool Project::setName(string name)
 
 void Project::setDescription(string description)
 {
-
    this->description=description;
-
 }
 
 void Project::edit(string name,string description)
@@ -69,11 +68,8 @@ void Project::edit(string name,string description)
       getline(cin,name);
 
       stop = setName(name);
-
-      if (stop) 
-         this->name=name;
          
-   }while (name.length()==0);
+   }while (name.length()==0 || !stop);
 
    if (description.length()==0)
    {
@@ -85,29 +81,45 @@ void Project::edit(string name,string description)
 
 void Project::addList(string name)
 {
-   List list(name);
+
+   if (name.length()!=0)
+   {
+      List list(name);
+      if (getPosList(name)==-1)
+         lists.push_back(list);
+      else 
+            Util::error(ERR_LIST_NAME);
+   }
 
    while (name.length()==0)
    {
       cout << L_NAME;
       getline(cin,name);
-      list.setName(name);
+      try
+      {
+         List list(name);
+         if (getPosList(name)==-1)
+            lists.push_back(list);
+         else 
+            Util::error(ERR_LIST_NAME);
+      }
+      catch(Error err)
+      {
+         Util::error(err);
+      }
    }
 
-   lists.push_back(list);
 }
 
 void Project::deleteList(string name)
 {
    int i,j;
    bool found = false;
-   List list(name);
 
    while (name.length()==0)
    {
       cout << L_NAME;
       getline(cin,name);
-      list.setName(name);
    }
 
    i = getPosList(name);
@@ -127,7 +139,6 @@ void Project::deleteList(string name)
 
 void Project::addTaskToList(string name)
 {
-   List list(name);
    string nameTask, date;
    int time = 0, i;
 
@@ -307,12 +318,18 @@ ostream& operator<<(ostream& os, const Project &p)
 {
 
    cout << p.getName() << endl;
-   if (p.getDescription().length()!=0)
+   if (p.getDescription()!="")
       cout << p.getDescription() << endl;
    for (unsigned i = 0; i < p.lists.size(); i++)
    {
       cout << p.lists[i];
    }
+
+
+   //cout << "Total left: " << list.getNumTasks()-list.getNumDone() 
+   //<< " ("<< list.getTimeTasks()-list.getTimeDone() << " minutes)" << endl;
+
+   //cout << "Total done: " << list.getNumDone() << " ("<< list.getTimeDone() << " minutes)" << endl;
 
    return os;
 }
