@@ -276,6 +276,40 @@ void Project::menu()
    } while(option!='b');       
 }
 
+void Project::highestPriority(Date deadline,Date &priorDate, string taskName, string &priorName) const
+{
+
+   if(priorDate.year>deadline.year){
+      
+      cout << deadline.year << " " << deadline.month << " " << deadline.day << endl;
+      priorDate.year = deadline.year;
+      priorDate.month = deadline.month;
+      priorDate.day = deadline.day;
+      priorName = taskName;
+       cout << priorDate.year << " " << priorDate.month << " " << priorDate.day << endl;
+   }
+
+   if (priorDate.year == deadline.year){
+
+      if (priorDate.month > deadline.month){
+         priorDate.day = deadline.day;
+         priorDate.month = deadline.month;
+         priorDate.year = deadline.year;
+         priorName = taskName;
+      } 
+      
+      else if (priorDate.month == deadline.month){
+
+         if (priorDate.day > deadline.day){
+            priorDate.day = deadline.day;
+            priorDate.month = deadline.month;
+            priorDate.year = deadline.year;
+            priorName = taskName;
+         }
+      }
+   }
+
+}
 
 string Project::summary() const
 {
@@ -307,25 +341,47 @@ ostream& operator<<(ostream& os, const Project &p)
 {
 
    int timeDone = 0, totalTime = 0, numDone = 0, totalTasks = 0;
+   Date priorDate;
+   string priorName;
+   vector <Task> task;
 
-   cout << p.getName() << endl;
+   priorDate.day = MAX_DAY + 1; 
+   priorDate.month = MAX_MONTH;
+   priorDate.year = MAX_YEAR;
+
+   os << p.getName() << endl;
    if (p.getDescription()!="")
-      cout << p.getDescription() << endl;
+      os << p.getDescription() << endl;
    for (unsigned i = 0; i < p.lists.size(); i++)
    {
-      cout << p.lists[i];
+      os << p.lists[i];
       numDone += p.lists[i].getNumDone();
       totalTasks += p.lists[i].getNumTasks();
       timeDone += p.lists[i].getTimeDone();
       totalTime += p.lists[i].getTimeTasks();
    }
 
-   cout << "Total left: " << totalTasks - numDone
+   os << "Total left: " << totalTasks - numDone
    << " ("<< totalTime - timeDone << " minutes)" << endl;
 
-   cout << "Total done: " << numDone << " ("
+   os << "Total done: " << numDone << " ("
    << timeDone << " minutes)" << endl;
 
+   for (unsigned i = 0; i < p.lists.size(); i++)
+   {
+      task = p.lists[i].getTasks();
+
+      for (unsigned j = 0; j < task.size(); j++)
+      {
+         p.highestPriority( task[j].getDeadline(), priorDate, task[j].getName() ,priorName); 
+      }
+   }
+
+   if (priorName.length() != 0)
+      {
+         os << "Highest priority: " << priorName << " (" << priorDate.year << "-" 
+         << priorDate.month << "-" << priorDate.day << ")" << endl;
+      }
    return os;
 }
 

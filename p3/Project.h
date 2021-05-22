@@ -14,7 +14,11 @@ const string DEADLINE = "Enter deadline: ";
 const string EXP_TIME = "Enter expected time: ";
 const string T_NAME = "Enter task name: " ;
 
-
+const int MAX_DAY = 31;
+const int MIN_DAY = 1;
+const int MAX_MONTH = 12;
+const int MAX_YEAR = 2100;
+const int MIN_YEAR = 2000;
 
 class Project{
 
@@ -28,6 +32,7 @@ class Project{
       int getPosList(string name) const;
       void showMenu();
       int askForListName(string name);
+      void highestPriority(Date deadline,Date &priorDate, string taskName, string &priorName) const;
    
    public:
       Project(string name,string description="");
