@@ -8,6 +8,7 @@ using namespace std;
 
 const string P_NAME = "Enter project name: " ;
 const string P_DESC = "Enter project description: ";
+const string P_ID = "Enter project id: ";
 const string L_NAME = "Enter list name: " ;
 const string DEADLINE = "Enter deadline: ";
 const string EXP_TIME = "Enter expected time: ";
@@ -25,6 +26,8 @@ class Project{
       string description;
       vector<List> lists;
       int getPosList(string name) const;
+      void showMenu();
+      int askForListName(string name);
    
    public:
       Project(string name,string description="");

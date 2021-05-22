@@ -11,7 +11,7 @@ class ToDo{
    friend ostream& operator<<(ostream &os, const ToDo &td);
 
    protected:
-      static int nextId = 1;
+      static int nextId;
       string name;
       vector<Project *> projects;
       int getPosProject(string name) const;

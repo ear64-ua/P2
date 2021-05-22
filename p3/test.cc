@@ -9,9 +9,9 @@ using namespace std;
 
 int main(){
     
-    string nombre;
-    string nomblista;
-    string proyName;
+    //string nombre;
+    //string nomblista;
+    //string proyName;
     //string date;
     //int time;
     //string isdone;
@@ -36,22 +36,22 @@ int main(){
     task.setTime(time);
     l1.addTask(task);
     }
-
+  
     cout << l1 << endl;
 */
 
  //PROJECT // 
-    cout << "Introdzca el nombre del proyecto: ";
-    getline(cin,proyName);
-    Project p1(proyName,"");
-    cout << p1.getId()<<", "<<p1.getName()<<", "<<p1.getDescription()<<endl;
+    //cout << "Introdzca el nombre del proyecto: ";
+    //getline(cin,proyName);
+    //Project p1(proyName,"");
+    //cout << p1.getId()<<", "<<p1.getName()<<", "<<p1.getDescription()<<endl;
 
     //cout <<"Introduzca nombre de lista: ";
     //getline(cin,nomblista);
-    p1.addList();
+    //p1.addList();
     //p1.addTaskToList(nomblista);
 
-    p1.menu();
+    //p1.menu();
 
     //LIST
 /*
@@ -74,8 +74,6 @@ int main(){
     getline(cin,isdone);
     l1.toggleTask(isdone);
     cout << l1;
-
-    
 */
 
     return 0;

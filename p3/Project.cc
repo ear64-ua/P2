@@ -60,7 +60,7 @@ void Project::setDescription(string description)
 
 void Project::edit(string name,string description)
 {
-   bool stop; 
+   bool stop = false; 
 
    do
    {
@@ -69,7 +69,7 @@ void Project::edit(string name,string description)
 
       stop = setName(name);
          
-   }while (name.length()==0 || !stop);
+   }while (!stop);
 
    if (description.length()==0)
    {
@@ -111,24 +111,35 @@ void Project::addList(string name)
 
 }
 
-void Project::deleteList(string name)
+int Project::askForListName(string name)
 {
-   int i,j;
-   bool found = false;
+
+   int i = 0;
 
    while (name.length()==0)
    {
       cout << L_NAME;
       getline(cin,name);
+
+      if (name.length()==0)
+         Util::error(ERR_EMPTY);
    }
 
    i = getPosList(name);
+
+   return i;
+}
+
+void Project::deleteList(string name)
+{
+   int i,j;
+
+   i = askForListName(name);
    
    if (i >= 0)
    {     
       j = i--;
       lists.erase(lists.begin()+j);
-      found = true;
    }
    
    else
@@ -142,16 +153,7 @@ void Project::addTaskToList(string name)
    string nameTask, date;
    int time = 0, i;
 
-   while (name.length()==0)
-   {
-      cout << L_NAME;
-      getline(cin,name);
-
-      if (name.length()==0)
-         Util::error(ERR_EMPTY);
-   }
-
-   i = getPosList(name);
+   i = askForListName(name);
    
    if (i>=0)
    {
@@ -185,16 +187,7 @@ void Project::deleteTaskFromList(string name)
    string nameTask;
    int i;
 
-   while (name.length()==0)
-   {
-      cout << L_NAME;
-      getline(cin,name);
-
-      if (name.length()==0)
-         Util::error(ERR_EMPTY);
-   }
-
-   i = getPosList(name);
+   i = askForListName(name);
    
    if (i >= 0)
    {
@@ -216,16 +209,7 @@ void Project::toggleTaskFromList(string name)
    string nameTask;
    int i;
 
-   while (name.length()==0)
-   {
-      cout << L_NAME;
-      getline(cin,name);
-
-      if (name.length()==0)
-         Util::error(ERR_EMPTY);
-   }
-
-   i = getPosList(name);
+   i = askForListName(name);
 
    if (i >= 0)
    {
@@ -242,15 +226,9 @@ void Project::toggleTaskFromList(string name)
 
 }
 
-void Project::menu()
+void Project::showMenu()
 {
-
-   string nameProject, description;
-   char option;
-
-   do{
-
-      cout << "1- Edit project" << endl
+   cout << "1- Edit project" << endl
        << "2- Add list" << endl
        << "3- Delete list" << endl 
        << "4- Add task" << endl
@@ -259,11 +237,22 @@ void Project::menu()
        << "7- Report" << endl
        << "b- Back to main menu" << endl
        << "Option: ";
-         
+}
+
+void Project::menu()
+{
+
+   string nameProject, description;
+   char option;
+
+   do
+   {   
+      showMenu();
       cin >> option;
       cin.get();
 
-      switch(option){
+      switch(option)
+      {
 
          case '1': edit();
                    break;
@@ -283,8 +272,8 @@ void Project::menu()
                    break;
 
          default:  Util::error(ERR_OPTION);
-         }
-      }while(option!='b');       
+      }
+   } while(option!='b');       
 }
 
 
@@ -317,19 +306,25 @@ string Project::summary() const
 ostream& operator<<(ostream& os, const Project &p)
 {
 
+   int timeDone = 0, totalTime = 0, numDone = 0, totalTasks = 0;
+
    cout << p.getName() << endl;
    if (p.getDescription()!="")
       cout << p.getDescription() << endl;
    for (unsigned i = 0; i < p.lists.size(); i++)
    {
       cout << p.lists[i];
+      numDone += p.lists[i].getNumDone();
+      totalTasks += p.lists[i].getNumTasks();
+      timeDone += p.lists[i].getTimeDone();
+      totalTime += p.lists[i].getTimeTasks();
    }
 
+   cout << "Total left: " << totalTasks - numDone
+   << " ("<< totalTime - timeDone << " minutes)" << endl;
 
-   //cout << "Total left: " << list.getNumTasks()-list.getNumDone() 
-   //<< " ("<< list.getTimeTasks()-list.getTimeDone() << " minutes)" << endl;
-
-   //cout << "Total done: " << list.getNumDone() << " ("<< list.getTimeDone() << " minutes)" << endl;
+   cout << "Total done: " << numDone << " ("
+   << timeDone << " minutes)" << endl;
 
    return os;
 }

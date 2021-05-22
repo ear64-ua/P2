@@ -79,17 +79,21 @@ void List::addTask(const Task& task)
 
 bool List::deleteTask(string name)
 {
-   unsigned i,j;
+   unsigned j;
+   bool found = false;
 
-   for(i = 0; i < getNumTasks(); i++)
+   for(unsigned i = 0; i < getNumTasks(); i++)
    {
-      if (this->tasks[i].getName()==name)
+      if (tasks[i].getName()==name)
       {
          j = i--;
          tasks.erase(tasks.begin()+j);
-         return true;
+         found = true;
       }
    }
+
+   if (found)
+      return true;
 
    return false;
 }
@@ -130,11 +134,6 @@ ostream& operator<<(ostream& os, const List &list)
       if (list.tasks[i].getIsDone())
          cout << list.tasks[i];
    }
-
-   cout << "Total left: " << list.getNumTasks()-list.getNumDone() 
-   << " ("<< list.getTimeTasks()-list.getTimeDone() << " minutes)" << endl;
-
-   cout << "Total done: " << list.getNumDone() << " ("<< list.getTimeDone() << " minutes)" << endl;
 
    return os;
 }
