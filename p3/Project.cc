@@ -170,11 +170,9 @@ void Project::addTaskToList(string name)
          cout << EXP_TIME;
          cin >> time;
          cin.get();
-      }
 
-      if (task.setTime(time))
-      {
-         lists[i].addTask(task);
+         if (task.setTime(time))
+            lists[i].addTask(task);
       }
    }
 
@@ -280,13 +278,11 @@ void Project::highestPriority(Date deadline,Date &priorDate, string taskName, st
 {
 
    if(priorDate.year>deadline.year){
-      
-      cout << deadline.year << " " << deadline.month << " " << deadline.day << endl;
+
       priorDate.year = deadline.year;
       priorDate.month = deadline.month;
       priorDate.day = deadline.day;
       priorName = taskName;
-       cout << priorDate.year << " " << priorDate.month << " " << priorDate.day << endl;
    }
 
    if (priorDate.year == deadline.year){
@@ -313,7 +309,6 @@ void Project::highestPriority(Date deadline,Date &priorDate, string taskName, st
 
 string Project::summary() const
 {
-
    int countDone = 0;
    unsigned i, j;
    stringstream sum;
@@ -332,7 +327,7 @@ string Project::summary() const
       }
    }
 
-   sum << "(" << getId() << ") " << getName() << " [" << countDone << "/" << k << "]" << endl;
+   sum << "(" << getId() << ") " << getName() << " [" << countDone << "/" << k << "] \n";
    return sum.str();
 }
 
@@ -349,9 +344,9 @@ ostream& operator<<(ostream& os, const Project &p)
    priorDate.month = MAX_MONTH;
    priorDate.year = MAX_YEAR;
 
-   os << p.getName() << endl;
+   os << "Name: " << p.getName() << endl;
    if (p.getDescription()!="")
-      os << p.getDescription() << endl;
+      os << "Description: " << p.getDescription() << endl;
    for (unsigned i = 0; i < p.lists.size(); i++)
    {
       os << p.lists[i];
@@ -373,7 +368,8 @@ ostream& operator<<(ostream& os, const Project &p)
 
       for (unsigned j = 0; j < task.size(); j++)
       {
-         p.highestPriority( task[j].getDeadline(), priorDate, task[j].getName() ,priorName); 
+         if(!task[j].getIsDone())
+            p.highestPriority( task[j].getDeadline(), priorDate, task[j].getName() ,priorName); 
       }
    }
 

@@ -7,7 +7,6 @@ int ToDo::nextId = 1;
 
 ToDo::ToDo(string name)
 {
-
    if (name.length()==0)
       throw ERR_EMPTY;
    else
@@ -16,9 +15,9 @@ ToDo::ToDo(string name)
 
 int ToDo::getPosProject(string name) const
 {   
-
    for (unsigned i = 0; i < projects.size();i++)
    {
+      projects[i]->getName();
       if (projects[i]->getName()==name)
          return i;
    }
@@ -54,31 +53,15 @@ bool ToDo::setName(string name)
 
 void ToDo::addProject(Project *project)
 {
-
-   if (name.length()!=0)
+   if (getPosProject(project->getName())==-1)
    {
-      if (getPosProject(name)==-1)
-      {
-         project->setId(nextId);
-         nextId++;
-         projects.push_back(project);
-      }
-      else 
-         throw ERR_PROJECT_NAME;
+      project->setId(nextId);
+      nextId++;
+      projects.push_back(project);
    }
-
-   while (name.length()==0)
-   {
-      cout << P_NAME;
-      getline(cin,name);
    
-      if (getPosProject(name)==-1)
-         projects.push_back(project);
-         
-      else 
-         throw ERR_PROJECT_NAME;
-   }
-
+   else 
+       throw ERR_PROJECT_NAME;
 }
 
 void ToDo::deleteProject(int id)
@@ -149,7 +132,7 @@ ostream& operator<<(ostream& os, const ToDo &toDo)
 
    for(unsigned i = 0; i < toDo.projects.size(); i++)
    {
-      cout << toDo.projects[i]->summary();
+      os << toDo.projects[i]->summary();
    }
 
    return os;

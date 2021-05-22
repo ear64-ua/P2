@@ -52,7 +52,7 @@ bool Task::setDeadline(string deadline)
          // meses del año con 31/30 o febrero con 28/29 días
          if (date.day >= MIN_DAY && (((date.month == 1 || date.month == 3 || date.month == 5 || date.month == 7 
             || date.month == 8 || date.month == 10 || date.month == 12) && date.day <= 31)          
-            || ((date.month == 4 || date.month == 6 || date.month == 9 || date.month == 11) && date.day <= 31) 
+            || ((date.month == 4 || date.month == 6 || date.month == 9 || date.month == 11) && date.day <= 30) 
             || (date.month == 2 && date.day <= bisiesto))){
             
             this->deadline = date;
