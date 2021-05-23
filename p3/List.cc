@@ -121,18 +121,18 @@ bool List::toggleTask(string name)
 ostream& operator<<(ostream& os, const List &list)
 {
    
-   cout << list.getName() << endl;
+   os << list.getName() << endl;
 
    for (unsigned i = 0; i < list.getNumTasks(); i++)
    {
       if (!list.tasks[i].getIsDone())
-         cout << list.tasks[i];
+         os << list.tasks[i];
    }
 
    for (unsigned i = 0; i < list.getNumTasks(); i++)
    {
       if (list.tasks[i].getIsDone())
-         cout << list.tasks[i];
+         os << list.tasks[i];
    }
 
    return os;
