@@ -71,7 +71,7 @@ void Project::edit(string name,string description)
          
    }while (!stop);
 
-   if (description.length()==0)
+   if (description.length()==0) 
    {
       cout << P_DESC;
       getline(cin,description);
@@ -82,16 +82,16 @@ void Project::edit(string name,string description)
 void Project::addList(string name)
 {
 
-   if (name.length()!=0)
+   if (name.length()!=0)                   // en caso de que se pase un parámetro 
    {
       List list(name);
-      if (getPosList(name)==-1)
-         lists.push_back(list);
+      if (getPosList(name)==-1)           // si no encuentra una lista con ese nombre, se le añadirá
+         lists.push_back(list);          //  al vector de listas 
       else 
             Util::error(ERR_LIST_NAME);
    }
 
-   while (name.length()==0)
+   while (name.length()==0)               // en caso de que no se pase un parámetro 
    {
       cout << L_NAME;
       getline(cin,name);
@@ -113,7 +113,6 @@ void Project::addList(string name)
 
 int Project::askForListName(string name)
 {
-
    int i = 0;
 
    while (name.length()==0)
@@ -165,13 +164,13 @@ void Project::addTaskToList(string name)
       cout << DEADLINE;
       getline(cin,date);
    
-      if(task.setDeadline(date))
+      if(task.setDeadline(date))    // si la fecha es correcta pide el tiempo
       { 
          cout << EXP_TIME;
          cin >> time;
          cin.get();
 
-         if (task.setTime(time))
+         if (task.setTime(time))    // si el tiempo también es correcto, se añade la tarea
             lists[i].addTask(task);
       }
    }
@@ -277,16 +276,16 @@ void Project::menu()
 void Project::highestPriority(Date deadline,Date &priorDate, string taskName, string &priorName) const
 {
 
-   if(priorDate.year>deadline.year){
-
+   if(priorDate.year>deadline.year)     // si el año actual es menor...
+   {
       priorDate.year = deadline.year;
       priorDate.month = deadline.month;
       priorDate.day = deadline.day;
       priorName = taskName;
    }
 
-   if (priorDate.year == deadline.year){
-
+   if (priorDate.year == deadline.year)  // en cambio si la fecha es la misma , debemos revisar su mes 
+   {
       if (priorDate.month > deadline.month){
          priorDate.day = deadline.day;
          priorDate.month = deadline.month;
@@ -294,9 +293,9 @@ void Project::highestPriority(Date deadline,Date &priorDate, string taskName, st
          priorName = taskName;
       } 
       
-      else if (priorDate.month == deadline.month){
-
-         if (priorDate.day > deadline.day){
+      else if (priorDate.month == deadline.month)  // si es el mismo mes, revisaremos el día para 
+      {                                            // comprobar si dicha fecha llega a ser menor que 
+         if (priorDate.day > deadline.day){        // la anterior
             priorDate.day = deadline.day;
             priorDate.month = deadline.month;
             priorDate.year = deadline.year;

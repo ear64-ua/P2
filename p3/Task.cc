@@ -33,8 +33,8 @@ bool Task::setDeadline(string deadline)
    date.day = date.month = date.year = 0;
    
    stringstream ss(deadline);
-   while (getline(ss,aux,'/'))
-   {
+   while (getline(ss,aux,'/'))    // separamos cada valor de la fecha en sus correspondientes 
+   {                             // variables
       k++;
       if (k==1)
          date.day=stoi(aux);
@@ -49,7 +49,7 @@ bool Task::setDeadline(string deadline)
 
    if (date.year >= MIN_YEAR && date.year <= MAX_YEAR){
       if (date.month > 0 && date.month < 13){
-         // meses del año con 31/30 o febrero con 28/29 días
+         // meses del año con 31 o 30, y si es bisiesto febrero con 28 o 29 días
          if (date.day >= MIN_DAY && (((date.month == 1 || date.month == 3 || date.month == 5 || date.month == 7 
             || date.month == 8 || date.month == 10 || date.month == 12) && date.day <= 31)          
             || ((date.month == 4 || date.month == 6 || date.month == 9 || date.month == 11) && date.day <= 30) 

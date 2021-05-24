@@ -15,7 +15,8 @@ unsigned List::getNumDone() const
 {
    unsigned n = 0;
 	
-   for (unsigned i = 0; i < getNumTasks() ;i++){
+   for (unsigned i = 0; i < getNumTasks() ;i++) // recorremos el vector y si está hecho, se suma
+   {                                            // 1 al contador
       if (tasks[i].getIsDone())
          n++;
    }
@@ -27,7 +28,8 @@ int List::getTimeTasks() const
 {
    int time = 0;
 	
-   for (unsigned i = 0; i < getNumTasks() ;i++){
+   for (unsigned i = 0; i < getNumTasks() ;i++)
+   {
 		
       time+=tasks[i].getTime();
    }
@@ -39,7 +41,8 @@ int List::getTimeDone() const
 {   
    int time = 0;
 
-   for (unsigned i = 0; i < getNumTasks() ;i++){
+   for (unsigned i = 0; i < getNumTasks() ;i++)  // por cada tarea hecha, se le va sumando 
+   {                                             // el tiempo de cada una
       if (tasks[i].getIsDone())
          time+=tasks[i].getTime();
    }
@@ -50,7 +53,8 @@ int List::getTimeDone() const
 int List::getPosTask(string name) const
 {   
 
-   for (unsigned i = 0; i < getNumTasks() ;i++){
+   for (unsigned i = 0; i < getNumTasks() ;i++)  // localizamos la posición en la que se encuentra 
+   {                                             // la tarea
       if (tasks[i].getName()==name)
          return i;
    }
@@ -82,7 +86,7 @@ bool List::deleteTask(string name)
    unsigned j;
    bool found = false;
 
-   for(unsigned i = 0; i < getNumTasks(); i++)
+   for(unsigned i = 0; i < getNumTasks(); i++) // según el nombre que se nos pase, eliminará dicha tarea
    {
       if (tasks[i].getName()==name)
       {
