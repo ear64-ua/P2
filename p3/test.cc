@@ -1,4 +1,4 @@
-//Esta funcion es para probar las diferentes funciones de cada clase
+// NIE X9853366M ABMA ROMERO, ENRIQUE
 #include <iostream>
 #include <vector>
 #include "Task.h"
