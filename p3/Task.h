@@ -5,14 +5,15 @@
 
 using namespace std;
 
-struct Date{
+struct Date
+{
   int day;
   int month;
   int year;
 };
 
-class Task{
-
+class Task
+{
    friend ostream& operator<<(ostream &os, const Task &task);
 
    protected:
