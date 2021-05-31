@@ -343,7 +343,7 @@ ostream& operator<<(ostream& os, const Project &p)
 
    int timeDone = 0, totalTime = 0, numDone = 0, totalTasks = 0;
    Date priorDate;
-   string priorName = "\n";   // se inicializa el nombre a un salto de linea 
+   string priorName = "\n ";   // se inicializa el nombre a un salto de linea 
    vector <Task> task;        // porque nunca se va a dar ese caso
 
    priorDate.day = MAX_DAY + 1; 
@@ -379,7 +379,7 @@ ostream& operator<<(ostream& os, const Project &p)
       }
    }
 
-   if (priorName != "\n")
+   if (priorName != "\n ")
    {         
       os << "Highest priority: " << priorName << " (" << priorDate.year << "-" 
       << priorDate.month << "-" << priorDate.day << ")" << endl;
