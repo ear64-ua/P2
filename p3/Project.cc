@@ -62,14 +62,17 @@ void Project::edit(string name,string description)
 {
    bool stop = false; 
 
-   do
+   if (name.length()!=0)
+      setName(name);
+
+   while (!stop && name.length()==0)
    {
       cout << P_NAME;
       getline(cin,name);
 
       stop = setName(name);
          
-   }while (!stop);
+   }
 
    if (description.length()==0) 
    {
@@ -77,6 +80,9 @@ void Project::edit(string name,string description)
       getline(cin,description);
       setDescription(description);
    }
+
+   else 
+      setDescription(description);
 }
 
 void Project::addList(string name)
@@ -336,8 +342,8 @@ ostream& operator<<(ostream& os, const Project &p)
 
    int timeDone = 0, totalTime = 0, numDone = 0, totalTasks = 0;
    Date priorDate;
-   string priorName;
-   vector <Task> task;
+   string priorName = "\n";   // se inicializa el nombre a un salto de linea 
+   vector <Task> task;        // porque nunca se va a dar ese caso
 
    priorDate.day = MAX_DAY + 1; 
    priorDate.month = MAX_MONTH;
@@ -372,11 +378,12 @@ ostream& operator<<(ostream& os, const Project &p)
       }
    }
 
-   if (priorName.length() != 0)
-      {
-         os << "Highest priority: " << priorName << " (" << priorDate.year << "-" 
-         << priorDate.month << "-" << priorDate.day << ")" << endl;
-      }
+   if (priorName != "\n")
+   {         
+      os << "Highest priority: " << priorName << " (" << priorDate.year << "-" 
+      << priorDate.month << "-" << priorDate.day << ")" << endl;
+   }
+
    return os;
 }
 

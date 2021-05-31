@@ -13,7 +13,7 @@ int main(){
     //string proyName;
     //string isdone;
     //vector <Task> t;
-
+/*
     // TASK 
 
     cout << "\n-----------Task------------" << endl;
@@ -66,44 +66,19 @@ int main(){
     }
 
     cout << "---------------------------" << endl;
-
+*/
     //PROJECT   
     
     cout << "\n---------Project------------" << endl;
 
-    Project p1("project 1","project 1 description");
-    p1.setId(4);
-    p1.addList("l1");
-    p1.addList("l2");
-    //p1.addTaskToList("l1");
-    //p1.addTaskToList("l1");
-    cout << "**DELETE TASK**" << endl;
-    //p1.deleteTaskFromList("l1");
-    cout << "**TOGGLE TASK**" << endl;
-    //p1.toggleTaskFromList("l1");
-    p1.deleteList("l2");
+    Project project("P","D");
+    
+    project.addList("L1");    
+    project.addTaskToList(); 
+    project.addTaskToList("L1"); 
+    project.addTaskToList();
 
-    cout << p1 <<endl;
-
-    Project p2("project 2","");
-    cout << p2 <<endl;
-
-    Project p3("project 3","");
-    p3.setDescription("project 3 description");
-    p3.setName("project 3 modified");
-    cout << p3 <<endl;
-
-    try
-    {
-        cout << "**EMPTY PROJECT NAME**" << endl;
-        Project p4("","");
-        cout << p4 <<endl;
-    }
-
-    catch(Error err)
-    {
-        Util::error(err);
-    }
+    cout << project;
 
 
 
